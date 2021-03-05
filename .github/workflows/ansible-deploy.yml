@@ -28,7 +28,9 @@ jobs:
       uses: luchihoratiu/debug-via-ssh@main
       with:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        SSH_PASS: tajnseHESlo123
+        NGROK_REGION: eu
+        NGROK_TIMEOUT: 300
+        SSH_PASS: tajnse-HESlo123
 
     - name: Prepare SSH
       run: |
