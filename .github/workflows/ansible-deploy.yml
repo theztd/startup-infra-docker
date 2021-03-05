@@ -67,12 +67,6 @@ jobs:
       env:
         VAULT_PASS: ${{ secrets.VAULT_PASS }}
 
-    # Configure servers
-    - name: DEVEL - run vultr-deploy.yml
-      run: |
-        cat vultr.ini
-        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ./env/devel ./deploy.yml --diff
-
     # Test if servers are accessable
     - name: DEVEL - ansible ping
       run: |
@@ -82,4 +76,4 @@ jobs:
     
     # Configure servers
     - name: DEVEL - run vultr-deploy.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ./env/devel ./deploy.yml --diff
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./deploy.yml --diff
