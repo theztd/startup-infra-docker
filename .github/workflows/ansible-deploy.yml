@@ -24,13 +24,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Start SSH session
-      uses: luchihoratiu/debug-via-ssh@main
-      with:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        NGROK_REGION: eu
-        NGROK_TIMEOUT: 300
-        SSH_PASS: tajnse-HESlo123
+#    - name: Start SSH session
+#      uses: luchihoratiu/debug-via-ssh@main
+#      with:
+#        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+#        NGROK_REGION: eu
+#        NGROK_TIMEOUT: 300
+#        SSH_PASS: tajnse-HESlo123
 
     - name: Prepare SSH
       run: |
@@ -46,9 +46,6 @@ jobs:
         EOF
         chmod 600 ~/.ssh/*
 
-        whoami
-        ssh -vvv 136.244.95.136 -i ~/.ssh/ssh.key "ip a"
-        
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
     
@@ -81,6 +78,6 @@ jobs:
     - name: DEVEL - run vultr-deploy.yml
       run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./deploy.yml --diff
 
-    - name: Don't kill instace
-      if: ${{ failure() }}
-      run: sleep 5m
+#    - name: Don't kill instace
+#      if: ${{ failure() }}
+#      run: sleep 5m
