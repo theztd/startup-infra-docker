@@ -70,6 +70,7 @@ jobs:
     # Test if servers are accessable
     - name: DEVEL - ansible ping
       run: |
+        env
         pwd
         ls -al
         ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
