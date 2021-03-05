@@ -72,3 +72,6 @@
   - role: core
     tags:
     - core
+  - role: docker
+    tags:
+    - docker
