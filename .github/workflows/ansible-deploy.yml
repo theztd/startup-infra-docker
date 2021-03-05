@@ -39,7 +39,7 @@ jobs:
         chmod 600 ~/.ssh/*
 
         whoami
-        ssh -vvv 136.244.95.136 "ip a"
+        ssh -vvv 136.244.95.136 -i ~/.ssh/ssh.key "ip a"
         
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
