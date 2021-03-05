@@ -43,6 +43,12 @@ jobs:
         
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
+    
+    - name: Start SSH session
+      uses: luchihoratiu/debug-via-ssh@main
+      with:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        SSH_PASS: tajnseHESlo123
 
     - name: Prepare vultr.ini
       run: |
