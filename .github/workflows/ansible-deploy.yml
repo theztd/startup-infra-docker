@@ -38,8 +38,8 @@ jobs:
         chmod 600 ~/.ssh/*
 
         ls -al ~/.ssh/
-        cat ~/.ssh/config
-        ssh 136.244.95.136 -l root "hostname -f"
+        cat ~/.ssh/*
+        ssh -vvv 136.244.95.136 "hostname -f"
         
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
