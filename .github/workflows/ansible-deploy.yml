@@ -33,8 +33,8 @@ jobs:
     - name: Prepare SSH
       run: |
         mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
         echo "${SSH_KEY}" > ~/.ssh/ssh.key
-        cat ~/.ssh/ssh.key
         cat >~/.ssh/config <<EOC
         Host *
           User root
@@ -52,7 +52,6 @@ jobs:
         key = $VULTR_API_KEY
         timeout = 30
         EOF
-        cat ./vultr.ini
       env:
         VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
