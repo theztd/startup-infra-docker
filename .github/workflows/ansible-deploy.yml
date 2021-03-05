@@ -34,13 +34,14 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         echo "${SSH_KEY}" > ~/.ssh/ssh.key
-        chmod 600 ~/.ssh/ssh.key
+        cat ~/.ssh/ssh.key
         cat >~/.ssh/config <<EOC
         Host *
           User root
           IdentityFile ~/.ssh/ssh.key
           StrictHostKeyChecking no
         EOC
+        chmod 600 ~/.ssh/*
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
 
