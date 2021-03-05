@@ -1,0 +1,74 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # --------------  Prepare Firewalls  -------------- #
+  - name: "{{ env }} - Init FE firewall"
+    vr_firewall_group:
+      name: "{{ env }}_FE"
+  - name: "{{ env }} - Create FW rules"
+    vr_firewall_rule:
+      group: "{{ env }}_FE"
+      protocol: "{{ item.proto }}"
+      port: "{{ item.port }}"
+      cidr: "{{ item.cidr }}"
+    with_items:
+    - port: 80
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 443
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+
+  - name: "{{ env }} - Init SSH firewall"
+    vultr_firewall_group:
+      name: "{{ env }}_SSH"
+  - name: "{{ env }} - Cretate SSH rules"
+    vultr_firewall_rule:
+      group: "{{ env }}_SSH"
+      protocol: "{{ item.proto }}"
+      port: "{{ item.port }}"
+      cidr: "{{ item.cidr }}"
+    with_items:
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+
+
+- hosts: cloud
+  gather_facts: no
+  pre_tasks:
+  - name: "{{ env }} - Cloud members are running"
+    local_action:
+      module: vultr_server
+      name: "{{ inventory_hostname_short }}"
+      os: "Debian 10 x64 (buster)"
+      private_network_enabled: yes
+      plan: "1024 MB RAM,25 GB SSD,1.00 TB BW"
+      ssh_keys:
+      - marek
+      - github
+      firewall_group: "{{ firewall_grp }}"
+      region: Frankfurt
+      state: present
+  - debug:
+      msg: "{{ v4_main_ip }}"
+#  - name: "{{ env }} - Register domain {{ inventory_hostname_short }}.{{ env }}-infra.io. IN A {{ internal_ip }}"
+#    vultr_dns_record:
+#      name: "{{ inventory_hostname_short }}"
+#      record_type: A
+#      domain: "{{ env }}-infra.io"
+#      data: "{{ internal_ip }}"
+#      state: present
+#      api_key: 
+
+  roles:
+  - role: core
+    tags:
+    - core

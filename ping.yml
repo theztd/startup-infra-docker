@@ -1,0 +1,11 @@
+---
+- name: Preflight test
+  hosts: all
+  gather_facts: yes
+  remote_user: root
+  # ansible_become: true
+  # ansible_become_method: sudo
+  # ansible_become_user: root
+  tasks:
+  - name: Check availability of all nodes
+    ping:

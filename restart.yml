@@ -1,0 +1,10 @@
+---
+- hosts: cloud
+  gather_facts: no
+  pre_tasks:
+  - name: "{{ env }} - Restarting nodes"
+    local_action:
+      module: vr_server
+      name: "{{ inventory_hostname_short }}"
+      region: Frankfurt
+      state: restarted

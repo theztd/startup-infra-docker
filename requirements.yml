@@ -1,0 +1,17 @@
+---
+- src: https://github.com/theztd/ans-core
+  version: master
+  name: core
+- src: https://github.com/theztd/ans-users
+  version: master
+  name: users
+- src: https://github.com/theztd/ans-prometheus
+  name: prometheus
+- src: https://github.com/theztd/ansible-node-exporter
+  name: node_exporter
+- src: https://github.com/theztd/ansible-grafana
+  name: grafana
+- src: https://github.com/theztd/ansible-mysqld_exporter
+  name: mysqld_exporter
+- src: https://github.com/theztd/ans-docker.git
+  name: docker-ce

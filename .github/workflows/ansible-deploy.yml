@@ -1,0 +1,85 @@
+name: Ansible deploy
+
+on:
+  push: 
+    branches:
+    - main
+    - devel
+  pull_request:
+    branches:
+    - main
+    - devel
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy-stage:
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container:
+      image: fejk/alpine-aws
+      #image: debian:latest
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Prepare my env
+#    - name: Install deps
+#      run: |
+#        apt update > /dev/null
+#        apt install -y python-jmespath git tree ansible ansible-lint python3-pip make 1> /dev/null
+#
+    - name: Install ansible dependencies
+      run: |
+        ansible-galaxy install -r requirements.yml --force
+
+    - name: Linter
+      run: ansible-lint .
+
+    - name: Prepare SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${SSH_KEY}" > ~/.ssh/ssh.key
+        chmod 600 ~/.ssh/ssh.key
+        cat >~/.ssh/config <<EOC
+        Host *
+          User root
+          IdentityFile ~/.ssh/ssh.key
+          StrictHostKeyChecking no
+        EOC
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+
+    - name: Prepare vultr.ini
+      run: |
+        cat > ./vultr.ini<<EOF
+        [default]
+        key = ${VULTR_API_KEY}
+        timeout = 30
+        EOF
+      env:
+        VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
+
+    - name: Prepare vault
+      run: echo "${VAULT_PASS}" > ./vault-pass
+      env:
+        VAULT_PASS: ${{ secrets.VAULT_PASS }}
+
+    # Configure servers
+    - name: DEVEL - run vultr-deploy.yml
+      run: |
+        cat vultr.ini
+        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ./env/devel ./deploy.yml --diff
+
+    # Test if servers are accessable
+    - name: DEVEL - ansible ping
+      run: |
+        pwd
+        ls -al
+        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
+    
+    # Configure servers
+    - name: DEVEL - run vultr-deploy.yml
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ./env/devel ./deploy.yml --diff
