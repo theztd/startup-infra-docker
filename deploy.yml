@@ -42,7 +42,7 @@
 
 
 - hosts: cloud
-  gather_facts: no
+  gather_facts: yes
   pre_tasks:
   - name: "{{ env }} - Cloud members are running"
     local_action:
@@ -57,21 +57,11 @@
       firewall_group: "{{ firewall_grp }}"
       region: Frankfurt
       state: present
-  - debug:
-      msg: "{{ v4_main_ip }}"
-#  - name: "{{ env }} - Register domain {{ inventory_hostname_short }}.{{ env }}-infra.io. IN A {{ internal_ip }}"
-#    vultr_dns_record:
-#      name: "{{ inventory_hostname_short }}"
-#      record_type: A
-#      domain: "{{ env }}-infra.io"
-#      data: "{{ internal_ip }}"
-#      state: present
-#      api_key: 
 
   roles:
   - role: core
     tags:
     - core
-  - role: docker
+  - role: docker-ce
     tags:
     - docker
