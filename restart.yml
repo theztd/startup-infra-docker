@@ -1,5 +1,5 @@
 ---
-- hosts: cloud
+- hosts: cluster
   gather_facts: no
   pre_tasks:
   - name: "{{ env }} - Restarting nodes"

@@ -1,4 +1,4 @@
-[cloud:vars]
+[all:vars]
 internal_domain = infra.io
 ansible_dns = check-this.link
 internal_if = ens7
@@ -8,6 +8,6 @@ firewall_grp = devel_FE
 [all:vars]
 env = devel
 
-[cloud]
+[cluster]
 node1 firewall_grp=devel_SSH internal_ip=10.1.11.3
 node2 internal_ip=10.1.11.2

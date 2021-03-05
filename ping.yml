@@ -1,6 +1,6 @@
 ---
 - name: Preflight test
-  hosts: all
+  hosts: cluster
   gather_facts: yes
   remote_user: root
   # ansible_become: true

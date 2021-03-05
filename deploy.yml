@@ -41,10 +41,10 @@
       proto: tcp
 
 
-- hosts: cloud
+- hosts: cluster
   gather_facts: yes
   pre_tasks:
-  - name: "{{ env }} - Cloud members are running"
+  - name: "{{ env }} - Cluster members are running"
     local_action:
       module: vultr_server
       name: "{{ inventory_hostname_short }}"

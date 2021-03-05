@@ -19,21 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fejk/alpine-aws
-      #image: debian:latest
     steps:
     # Checkout code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Prepare my env
-#    - name: Install deps
-#      run: |
-#        apt update > /dev/null
-#        apt install -y python-jmespath git tree ansible ansible-lint python3-pip make 1> /dev/null
-#
     - name: Install ansible dependencies
-      run: |
-        ansible-galaxy install -r requirements.yml --force
+      run: ansible-galaxy install -r requirements.yml --force
 
     - name: Linter
       run: ansible-lint .
@@ -56,9 +48,10 @@ jobs:
       run: |
         cat > ./vultr.ini<<EOF
         [default]
-        key = ${VULTR_API_KEY}
+        key = $VULTR_API_KEY
         timeout = 30
         EOF
+        cat ./vultr.ini
       env:
         VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
@@ -69,11 +62,7 @@ jobs:
 
     # Test if servers are accessable
     - name: DEVEL - ansible ping
-      run: |
-        env
-        pwd
-        ls -al
-        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
     
     # Configure servers
     - name: DEVEL - run vultr-deploy.yml
