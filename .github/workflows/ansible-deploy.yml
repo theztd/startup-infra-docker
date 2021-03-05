@@ -24,24 +24,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install ansible dependencies
-      run: ansible-galaxy install -r requirements.yml --force
-
-    - name: Linter
-      run: ansible-lint .
-
     - name: Prepare SSH
       run: |
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         echo "${SSH_KEY}" > ~/.ssh/ssh.key
-        cat >~/.ssh/config <<EOC
+        cat > ~/.ssh/config<<EOC
         Host *
           User root
           IdentityFile ~/.ssh/ssh.key
           StrictHostKeyChecking no
         EOC
         chmod 600 ~/.ssh/*
+
+        ls -al ~/.ssh/
+        cat ~/.ssh/config
+        ssh 136.244.95.136 -l root "hostname -f"
+        
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
 
@@ -60,6 +59,12 @@ jobs:
       env:
         VAULT_PASS: ${{ secrets.VAULT_PASS }}
 
+    - name: Install ansible dependencies
+      run: ansible-galaxy install -r requirements.yml --force
+
+    - name: Linter
+      run: ansible-lint .
+    
     # Test if servers are accessable
     - name: DEVEL - ansible ping
       run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
