@@ -70,9 +70,9 @@ jobs:
     - name: Linter
       run: ansible-lint .
     
-    # Test if servers are accessable
-    - name: DEVEL - ansible ping
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
+#    # Test if servers are accessable
+#    - name: DEVEL - ansible ping
+#      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
     
     # Configure servers
     - name: DEVEL - run vultr-deploy.yml
