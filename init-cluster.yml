@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # --------------  Prepare Firewalls  -------------- #
+  - name: "{{ env }} - Init FE firewall"
+    vultr_firewall_group:
+      name: "{{ env }}_FE"
+  - name: "{{ env }} - Create FW rules"
+    vultr_firewall_rule:
+      group: "{{ env }}_FE"
+      protocol: "{{ item.proto }}"
+      port: "{{ item.port }}"
+      cidr: "{{ item.cidr }}"
+    with_items:
+    - port: 80
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 443
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+
+  - name: "{{ env }} - Init SSH firewall"
+    vultr_firewall_group:
+      name: "{{ env }}_SSH"
+  - name: "{{ env }} - Cretate SSH rules"
+    vultr_firewall_rule:
+      group: "{{ env }}_SSH"
+      protocol: "{{ item.proto }}"
+      port: "{{ item.port }}"
+      cidr: "{{ item.cidr }}"
+    with_items:
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    - port: 22
+      cidr: "0.0.0.0/0"
+      proto: tcp
+
+
+- hosts: cluster
+  gather_facts: no
+  pre_tasks:
+  - name: "{{ env }} - Cloud members are running"
+    local_action:
+      module: vultr_server
+      name: "{{ inventory_hostname_short }}"
+      os: "Debian 10 x64 (buster)"
+      private_network_enabled: yes
+      plan: "{{ plan }}"
+      ssh_keys:
+      - marek
+      firewall_group: "{{ firewall_grp }}"
+      region: "{{ region }}"
+      state: present
+  - debug:
+      msg: "{{ internal_ip }}"
+
+- name: "{{ env }} - Configure nodes"
+  include: deploy.yml
+

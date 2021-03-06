@@ -56,6 +56,8 @@ jobs:
         key = $VULTR_API_KEY
         timeout = 30
         EOF
+
+        chmod 600 ./vultr.ini
       env:
         VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
@@ -76,7 +78,7 @@ jobs:
     
     # Configure servers
     - name: DEVEL - run vultr-deploy.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./deploy.yml --diff
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./init-cluster.yml --diff
 
 #    - name: Don't kill instace
 #      if: ${{ failure() }}
