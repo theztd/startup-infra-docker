@@ -1,67 +1,22 @@
 ---
-- hosts: localhost
-  gather_facts: no
-  tasks:
-  # --------------  Prepare Firewalls  -------------- #
-  - name: "{{ env }} - Init FE firewall"
-    vr_firewall_group:
-      name: "{{ env }}_FE"
-  - name: "{{ env }} - Create FW rules"
-    vr_firewall_rule:
-      group: "{{ env }}_FE"
-      protocol: "{{ item.proto }}"
-      port: "{{ item.port }}"
-      cidr: "{{ item.cidr }}"
-    with_items:
-    - port: 80
-      cidr: "0.0.0.0/0"
-      proto: tcp
-    - port: 443
-      cidr: "0.0.0.0/0"
-      proto: tcp
-    - port: 22
-      cidr: "0.0.0.0/0"
-      proto: tcp
-
-  - name: "{{ env }} - Init SSH firewall"
-    vultr_firewall_group:
-      name: "{{ env }}_SSH"
-  - name: "{{ env }} - Cretate SSH rules"
-    vultr_firewall_rule:
-      group: "{{ env }}_SSH"
-      protocol: "{{ item.proto }}"
-      port: "{{ item.port }}"
-      cidr: "{{ item.cidr }}"
-    with_items:
-    - port: 22
-      cidr: "0.0.0.0/0"
-      proto: tcp
-    - port: 22
-      cidr: "0.0.0.0/0"
-      proto: tcp
-
-
 - hosts: cluster
-  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
   pre_tasks:
-  - name: "{{ env }} - Cluster members are running"
-    local_action:
-      module: vultr_server
-      name: "{{ inventory_hostname_short }}"
-      os: "Debian 10 x64 (buster)"
-      private_network_enabled: yes
-      plan: "1024 MB RAM,25 GB SSD,1.00 TB BW"
-      ssh_keys:
-      - marek
-      - github
-      firewall_group: "{{ firewall_grp }}"
-      region: Frankfurt
-      state: present
+  - service_facts:
+    register: svc_list
+    tags: always
 
   roles:
   - role: core
     tags:
     - core
+    - base
+  - role: users
+    tags:
+    - users
+    - base
   - role: docker-ce
     tags:
     - docker

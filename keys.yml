@@ -6,3 +6,7 @@
     ngine_io.vultr.vultr_ssh_key:
       name: marek
       ssh_key: "{{ lookup('file', 'keys/marek') }}"
+  - name: ensure an SSH key is present
+    ngine_io.vultr.vultr_ssh_key:
+      name: github
+      ssh_key: "{{ lookup('file', 'keys/github') }}"
