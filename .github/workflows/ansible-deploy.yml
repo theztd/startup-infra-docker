@@ -45,6 +45,7 @@ jobs:
 
         EOF
         chmod 600 ~/.ssh/*
+        cp -a ~/.ssh /root/
 
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
