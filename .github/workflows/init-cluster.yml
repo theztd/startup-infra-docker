@@ -22,7 +22,7 @@ on:
         
 
 jobs:
-  deploy-stage:
+  deploy:
     #runs-on: self-hosted
     runs-on: ubuntu-latest
     container:

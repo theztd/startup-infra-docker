@@ -12,8 +12,7 @@ on:
 
 
 jobs:
-  deploy-stage:
-    #runs-on: self-hosted
+  drop:
     runs-on: ubuntu-latest
     container:
       image: fejk/alpine-aws
