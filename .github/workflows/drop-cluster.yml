@@ -1,0 +1,52 @@
+name: DROP cluster
+
+on: 
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'ENV'     
+        required: true
+        default: 'devel'
+      tags:
+        description: 'Choose environment'  
+
+
+on:
+  push: 
+  pull_request:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy-stage:
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container:
+      image: fejk/alpine-aws
+    steps:
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Prepare vultr.ini
+      run: |
+        cat > ./vultr.ini<<EOF
+        [default]
+        key = $VULTR_API_KEY
+        timeout = 30
+        EOF
+
+        chmod 600 ./vultr.ini
+      env:
+        VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
+
+    - name: Linter
+      run: ansible-lint .
+    
+    # Configure servers
+    - name: DEVEL - run vultr-deploy.yml
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ./env/${env} ./drop-cluster.yml
+      env:
+        env: ${{ github.event.inputs.env }}
+

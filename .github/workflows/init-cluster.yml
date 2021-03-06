@@ -12,6 +12,14 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      env:
+        description: 'ENV'
+        required: true
+        default: 'devel'
+      tags:
+        description: 'Choose environment'
+        
 
 jobs:
   deploy-stage:
@@ -78,8 +86,10 @@ jobs:
 #      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./ping.yml
     
     # Configure servers
-    - name: DEVEL - run vultr-deploy.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./init-cluster.yml --diff
+    - name: ${env} - run vultr-deploy.yml
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/${env} ./init-cluster.yml --diff
+      env:
+        env: ${{ github.event.inputs.env }}
 
     - name: Don't kill instace
       if: ${{ failure() }}
