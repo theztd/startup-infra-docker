@@ -80,6 +80,6 @@ jobs:
     - name: DEVEL - run vultr-deploy.yml
       run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/devel ./init-cluster.yml --diff
 
-#    - name: Don't kill instace
-#      if: ${{ failure() }}
-#      run: sleep 5m
+    - name: Don't kill instace
+      if: ${{ failure() }}
+      run: sleep 10m
