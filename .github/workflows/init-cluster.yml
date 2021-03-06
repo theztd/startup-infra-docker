@@ -1,4 +1,4 @@
-name: Ansible deploy
+name: Init cluster
 
 on:
   push: 
