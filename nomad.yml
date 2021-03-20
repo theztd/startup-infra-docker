@@ -1,0 +1,71 @@
+---
+- hosts: cluster
+  roles:
+  - role: nomad
+    tags:
+    - nomad
+  - role: consul
+    tags:
+    - consul
+
+- name: Init nomad master
+  hosts: masters
+  gather_facts: yes
+  remote_user: root
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_python_interpreter: "/usr/bin/env python3"
+    consul_acl_token: false
+  tasks:
+  - name: Generate bootstrap key
+    shell: "nomad acl bootstrap > /root/bootstrap"
+    args:
+      warn: no
+      creates: /root/bootstrap
+
+  - name: Get nomad token
+    shell: 'grep "Secret" bootstrap | cut -d= -f2 | xargs'
+    register: nom_key
+
+  - set_fact:
+      nomad_master_token: "{{ nom_key.stdout }}"
+
+  - name: Nomad shell customization
+    copy:
+      dest: /etc/profile.d/20-nomad.sh
+      mode: 0755
+      owner: root
+      content: |
+        #!/bin/bash
+        # managed by Ansible
+
+        complete -C /usr/local/bin/nomad nomad
+
+        alias members="nomad server members ; echo ""; nomad node status -verbose"
+
+        export NOMAD_TOKEN="{{nomad_master_token}}"
+        export NOMAD_ADDR="http://localhost:4646"
+
+  - name: Create system namespace
+    shell: nomad namespace apply -description "system services" system
+    run_once: true
+
+  - name: Get status
+    shell: nomad node status
+
+  - name: Cluster info
+    pause:
+      seconds: 1
+      prompt: |
+
+        Summary
+        =======
+
+        Cluster nodes
+        -------------
+        {% for host in hostvars %}
+        {{ hostvars[host]['inventory_hostname'] }} - {{ hostvars[host]['ansible_ssh_host'] }}
+        {% endfor %}
+
+        NOMAD_TOKEN   {{nomad_master_token}}
+        

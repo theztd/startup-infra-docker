@@ -3,10 +3,16 @@ env = devel
 internal_domain = infra.io
 internal_if = ens7
 internal_mtu = 1400
-firewall_grp = devel_SSH
+firewall_grp = devel_NODES
 plan = "1024 MB RAM,25 GB SSD,1.00 TB BW"
 region = Frankfurt
 
-[cluster]
-node1 fqdn=node1.fejk.net DISABLED_firewall_grp=devel_SSH 
-node2 fqdn=node2.fejk.net 
+[masters]
+node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS
+
+[nodes]
+node2 fqdn=node2.fejk.net
+
+[cluster:children]
+masters
+nodes

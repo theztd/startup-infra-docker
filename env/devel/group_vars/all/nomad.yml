@@ -1,0 +1,24 @@
+# Nomad
+nomad_manage_group: true
+nomad_group: nomad              # unix user for nomad
+nomad_group_name: cluster       # ansible group used by nomad
+nomad_use_consul: false         # Consul is not needed for establishing the cluster
+nomad_consul_address: "localhost:8500"
+nomad_acl_enabled: true
+# Prometheus metrics
+nomad_telemetry: true
+nomad_telemetry_publish_allocation_metrics: true
+nomad_telemetry_publish_node_metrics: true
+nomad_telemetry_prometheus_metrics: true
+
+# in production cluster it should be encrypted in vault
+nomad_encrypt: 3pa39lgTF/jt1OZZckld5P/5FCkm0pJXI5J4V9LY9eo=
+
+# enable raw exec to be able manage all services directly
+# enable local volumes to be able mount hosts directory to container
+nomad_options:
+  driver.raw_exec.enable: "1"
+  docker.volumes.enabled: "1"
+  # If you have systemd for example in container this is required
+  # docker.privileged.enabled: true
+  docker.auth.config: "/root/.docker/config.json"

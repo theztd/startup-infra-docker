@@ -1,0 +1,27 @@
+# Consul
+consul_group_name: cluster      # ansible group used by consul
+consul_datadir: /var/consul
+
+# Node role
+consul_node_role: client
+consul_ui: false
+consul_server: false
+consul_log_files_count: 10
+consul_client_addr: 0.0.0.0
+
+# DNSmasq
+consul_dnsmasq_enable: true
+consul_dnsmasq_listen_addresses:
+- 172.17.0.1
+- 127.0.0.1
+
+# Features
+consul_connect_enabled: true
+
+# Hardening
+# In production this code should be in vault
+consul_encrypt_key: "ht7OvseXiSJwLOiwNNLDbo6LCcWyYoS96Pv86uHXFSM="
+#consul_acl_enable: true
+#consul_default_policy: allow  # deny
+#consul_token_persistence: true
+#consul_acl_master_token_display: true

@@ -3,36 +3,52 @@
   gather_facts: no
   tasks:
   # --------------  Prepare Firewalls  -------------- #
-  - name: "{{ env }} - Init FE firewall"
+  - name: "{{ env }} - Init MASTERS firewall"
     vultr_firewall_group:
-      name: "{{ env }}_FE"
+      name: "{{ env }}_MASTERS"
   - name: "{{ env }} - Create FW rules"
     vultr_firewall_rule:
-      group: "{{ env }}_FE"
+      group: "{{ env }}_MASTERS"
       protocol: "{{ item.proto }}"
       port: "{{ item.port }}"
       cidr: "{{ item.cidr }}"
     with_items:
+    # Allow http
     - port: 80
       cidr: "0.0.0.0/0"
       proto: tcp
+    # Allow https
     - port: 443
       cidr: "0.0.0.0/0"
       proto: tcp
+    # SSH port
     - port: 22
       cidr: "0.0.0.0/0"
       proto: tcp
+    # Nomad mgmt
+    - port: 4646
+      cidr: "0.0.0.0/0"
+      proto: tcp
 
-  - name: "{{ env }} - Init SSH firewall"
+  - name: "{{ env }} - Init NODES firewall"
     vultr_firewall_group:
-      name: "{{ env }}_SSH"
-  - name: "{{ env }} - Cretate SSH rules"
+      name: "{{ env }}_NODES"
+  - name: "{{ env }} - Cretate NODES rules"
     vultr_firewall_rule:
-      group: "{{ env }}_SSH"
+      group: "{{ env }}_NODES"
       protocol: "{{ item.proto }}"
       port: "{{ item.port }}"
       cidr: "{{ item.cidr }}"
     with_items:
+    # Allow http
+    - port: 80
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    # Allow https
+    - port: 433
+      cidr: "0.0.0.0/0"
+      proto: tcp
+    # SSH port
     - port: 22
       cidr: "0.0.0.0/0"
       proto: tcp
@@ -54,6 +70,26 @@
       region: "{{ region }}"
       state: present
 
-- name: "{{ env }} - Configure nodes"
+- hosts: localhost
+  tasks:
+#  - debug:
+#      msg: "{{ env }} - {{ item }} IN A {{ hostvars[item].v4_main_ip }}"
+#    with_items: "{{ groups['all'] }}"
+  - name: "{{ env }} - Register public domains"
+    cloudflare_dns:
+      zone: "fejk.net"
+      record: "{{ item }}"
+      type: A
+      proxied: no
+      value: "{{ hostvars[item].v4_main_ip }}"
+      state: present
+      solo: true
+      account_email: "{{ vault_account_email }}"
+      account_api_token: "{{ vault_account_api_token }}"
+    with_items: "{{ groups['cluster'] }}"
+
+- name: "{{ env }} - Configure base servers"
   include: deploy.yml
 
+- name: "{{ env }} - Configure nomad"
+  include: nomad.yml
