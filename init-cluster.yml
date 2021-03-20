@@ -49,11 +49,10 @@
       plan: "{{ plan }}"
       ssh_keys:
       - marek
+      - github
       firewall_group: "{{ firewall_grp }}"
       region: "{{ region }}"
       state: present
-  - debug:
-      msg: "{{ internal_ip }}"
 
 - name: "{{ env }} - Configure nodes"
   include: deploy.yml
