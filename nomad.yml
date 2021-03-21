@@ -16,6 +16,7 @@
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     ansible_python_interpreter: "/usr/bin/env python3"
     consul_acl_token: false
+
   tasks:
   - name: Generate bootstrap key
     shell: "nomad acl bootstrap > /root/bootstrap"
