@@ -6,6 +6,9 @@ internal_mtu = 1400
 firewall_grp = devel_NODES
 plan = "1024 MB RAM,25 GB SSD,1.00 TB BW"
 region = Frankfurt
+consul_version = 1.9.3
+nomad_version = 1.0.3
+
 
 [masters]
 node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS

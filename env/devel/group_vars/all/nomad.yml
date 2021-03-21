@@ -5,6 +5,8 @@ nomad_group_name: cluster       # ansible group used by nomad
 nomad_use_consul: false         # Consul is not needed for establishing the cluster
 nomad_consul_address: "localhost:8500"
 nomad_acl_enabled: true
+nomad_bind_address: 0.0.0.0
+
 # Prometheus metrics
 nomad_telemetry: true
 nomad_telemetry_publish_allocation_metrics: true

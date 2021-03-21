@@ -1,2 +1,4 @@
+---
 consul_node_role: masters
 consul_server: true
+consul_node_role: bootstrap
