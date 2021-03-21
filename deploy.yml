@@ -8,6 +8,23 @@
     register: svc_list
     tags: always
 
+  tasks:
+  - name: Backup home to s3
+    cron:
+      name: Backup home to s3
+      job: '/bin/bash -lc "s3cmd sync /home/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
+      minute: "30"
+      state: present
+    tags:
+    - backup
+  - name: Backup volumes to s3
+    cron:
+      name: Backup volumes to s3
+      job: '/bin/bash -lc "s3cmd sync /var/lib/docker/volumes/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
+      minute: "05"
+      state: present
+    tags: backup
+  
   roles:
   - role: core
     tags:
@@ -20,3 +37,9 @@
   - role: docker-ce
     tags:
     - docker
+  - role: s3cmd
+    tags:
+    - backup
+
+- name: "{{ env }} - Configure nomad"
+  include: nomad.yml

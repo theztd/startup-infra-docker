@@ -87,9 +87,20 @@
       account_email: "{{ vault_account_email }}"
       account_api_token: "{{ vault_account_api_token }}"
     with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow nodes access to nomad masters 4647"
+    vultr_firewall_rule:
+      group: "{{ env }}_MASTERS"
+      protocol: tcp
+      port: 4647
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow nodes access to nomad masters 4648"
+    vultr_firewall_rule:
+      group: "{{ env }}_MASTERS"
+      protocol: tcp
+      port: 4648
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
 
 - name: "{{ env }} - Configure base servers"
   include: deploy.yml
-
-- name: "{{ env }} - Configure nomad"
-  include: nomad.yml

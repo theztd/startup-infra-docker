@@ -2,10 +2,23 @@
 nomad_manage_group: true
 nomad_group: nomad              # unix user for nomad
 nomad_group_name: cluster       # ansible group used by nomad
+nomad_config_dir: /etc/nomad    # I don't like default /etc/nomad.d path
 nomad_use_consul: false         # Consul is not needed for establishing the cluster
 nomad_consul_address: "localhost:8500"
 nomad_acl_enabled: true
 nomad_bind_address: 0.0.0.0
+
+# In case you want to use internal network ip for nomad communication 
+# It is a good idea in a single DC cluster)
+nomad_advertise_address: "{{ internal_ip }}"
+
+# It's good idea to reserve a few resources to system
+# if you plan to schedule applications on master node, 
+# reserved resources is highly recomended
+nomad_reserved:
+  cpu: 500
+  memory: 256
+
 
 # Prometheus metrics
 nomad_telemetry: true
@@ -21,6 +34,9 @@ nomad_encrypt: 3pa39lgTF/jt1OZZckld5P/5FCkm0pJXI5J4V9LY9eo=
 nomad_options:
   driver.raw_exec.enable: "1"
   docker.volumes.enabled: "1"
+  
   # If you have systemd for example in container this is required
   # docker.privileged.enabled: true
-  docker.auth.config: "/root/.docker/config.json"
+  
+  # If you uses private docker registry
+  # docker.auth.config: "/root/.docker/config.json"

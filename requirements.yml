@@ -9,6 +9,8 @@
   name: prometheus
 - src: https://github.com/theztd/ansible-node-exporter
   name: node_exporter
+- src: https://github.com/theztd/ans-s3cmd
+  name: s3cmd
 - src: https://github.com/theztd/ansible-grafana
   name: grafana
 - src: https://github.com/theztd/ansible-mysqld_exporter

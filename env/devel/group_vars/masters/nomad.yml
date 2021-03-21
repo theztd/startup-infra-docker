@@ -1,5 +1,6 @@
 nomad_node_role: both
 consul_node_role: server
+
 nomad_meta:
   role: master
   region: globe
