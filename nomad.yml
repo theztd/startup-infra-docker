@@ -41,6 +41,7 @@
         # managed by Ansible
 
         complete -C /usr/local/bin/nomad nomad
+        complete -C /usr/local/bin/nomad nomad
 
         alias members="nomad server members ; echo ""; nomad node status -verbose"
 

@@ -8,6 +8,11 @@ consul_ui: false
 consul_server: false
 consul_log_files_count: 10
 consul_client_addr: 0.0.0.0
+consul_bind_address: 0.0.0.0
+# In case you want to use internal network ip for nomad communication 
+# It is a good idea in a single DC cluster)
+consul_advertise_address_wan: "{{ internal_ip }}"
+consul_advertise_address: "{{ internal_ip }}"
 
 # DNSmasq
 consul_dnsmasq_enable: true

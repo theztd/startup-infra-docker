@@ -11,7 +11,7 @@ nomad_version = 1.0.3
 
 
 [masters]
-node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS
+node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS consul_node_role=bootstrap
 
 [nodes]
 node2 fqdn=node2.fejk.net
