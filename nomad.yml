@@ -64,19 +64,19 @@
     tags:
     - jobs
 
-  - name: Cluster info
-    pause:
-      seconds: 1
-      prompt: |
-
-        Summary
-        =======
-
-        Cluster nodes
-        -------------
-        {% for host in hostvars %}
-        {{ hostvars[host]['inventory_hostname'] }} - {{ hostvars[host].v4_main_ip }}
-        {% endfor %}
-
-        NOMAD_TOKEN   {{nomad_master_token}}
-        
+#  - name: Cluster info
+#    pause:
+#      seconds: 1
+#      prompt: |
+#
+#        Summary
+#        =======
+#
+#        Cluster nodes
+#        -------------
+#        {% for host in hostvars %}
+#        {{ hostvars[host]['inventory_hostname'] }} - {{ hostvars[host].v4_main_ip }}
+#        {% endfor %}
+#
+#        NOMAD_TOKEN   {{nomad_master_token}}
+#        
