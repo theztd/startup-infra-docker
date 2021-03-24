@@ -36,11 +36,11 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
-        echo "${SSH_KEY}" > ~/.ssh/ssh.key
+        eval $(ssh-agent -s)
+        ssh-add <(echo "${SSH_KEY}")
         cat > ~/.ssh/config<<EOF
         Host *
           User root
-          IdentityFile ~/.ssh/ssh.key
           StrictHostKeyChecking no
 
         EOF
