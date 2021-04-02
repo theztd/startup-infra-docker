@@ -9,6 +9,11 @@
     tags: always
 
   tasks:
+  - name: Install gotop
+    unarchive:
+      src: https://github.com/xxxserxxx/gotop/releases/download/v4.1.1/gotop_v4.1.1_linux_amd64.tgz
+      dest: /usr/local/bin
+      remote_src: yes
   - name: Backup home to s3
     cron:
       name: Backup home to s3
@@ -24,6 +29,8 @@
       minute: "05"
       state: present
     tags: backup
+  - name: Install loki plugin to docker
+    shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions; exit 0"
   
   roles:
   - role: core
