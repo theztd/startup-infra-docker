@@ -1,0 +1,20 @@
+auth_enabled: false
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    final_sleep: 0s
+  chunk_idle_period: 5m
+  chunk_retain_period: 30s
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h # 7days
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 96h # 4days
