@@ -44,6 +44,7 @@ jobs:
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         echo $SSH_KEY > ~/.ssh/ssh_key
+        chmod 0400 ~/.ssh/ssh_key
         eval $(ssh-agent -s)
         ssh-add ~/.ssh/ssh_key
         cat > ~/.ssh/config<<EOF
