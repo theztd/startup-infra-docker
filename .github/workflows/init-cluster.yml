@@ -22,6 +22,13 @@ on:
         
 
 jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: gitleaks-action
+      uses: zricethezav/gitleaks-action@master
+
   deploy:
     #runs-on: self-hosted
     runs-on: ubuntu-latest
