@@ -65,7 +65,7 @@
       plan: "{{ plan }}"
       ssh_keys:
       - marek
-#      - github
+      - github
 #      - "{{ root_keys }}"
       firewall_group: "{{ firewall_grp }}"
       region: "{{ region }}"
