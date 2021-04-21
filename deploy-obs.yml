@@ -41,6 +41,12 @@
     tags:
     - users
     - base
+  - role: prometheus
+    tags:
+    - prometheus
+  - role: node_exporter
+    tags:
+    - prometheus
   - role: docker-ce
     tags:
     - docker
@@ -63,3 +69,19 @@
       account_email: "{{ cloudflare_account_email }}"
       account_api_token: "{{ cloudflare_account_api_token }}"
     with_items: "{{ groups['all'] }}"
+    tags:
+    - dns
+  - name: "{{ env }} - Register play.kurzy-online.eu"
+    cloudflare_dns:
+      zone: "kurzy-online.eu"
+      record: "play.kurzy-online.eu"
+      type: A
+      proxied: yes
+      value: "{{ hostvars[item].v4_main_ip }}"
+      account_email: "{{ cloudflare_account_email }}"
+      account_api_token: "{{ cloudflare_account_api_token }}"
+    with_items:
+    - obs1
+    tags:
+    - app_dns
+    - dns

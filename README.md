@@ -32,3 +32,8 @@ The key parts are:
  * **~/.vultr.ini** is the right place where api key should be placed
 
 
+ToDO:
+-----
+
+- write ansible for this: https://www.observability.blog/nginx-monitoring-with-prometheus/ (works nice with grafana dashboard **11199**)
+

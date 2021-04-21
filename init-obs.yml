@@ -1,0 +1,50 @@
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  # --------------  Prepare Firewalls  -------------- #
+  - name: "{{ env }} - Init OBS"
+    vultr_firewall_group:
+      name: "{{ env }}_OBS"
+  - name: "{{ env }} - Allow all from everywhere"
+    vultr_firewall_rule:
+      group: "{{ env }}_OBS"
+      protocol: tcp
+      start_port: 10
+      end_port: 65535
+      cidr: "0.0.0.0/0"
+
+- hosts: obs
+  gather_facts: no
+  pre_tasks:
+  - name: "{{ env }} - OBS server is running"
+    local_action:
+      module: vultr_server
+      name: "{{ inventory_hostname_short }}"
+      os: "Debian 10 x64 (buster)"
+      private_network_enabled: yes
+      plan: "{{ plan }}"
+      ssh_keys:
+      - marek
+      - github
+      firewall_group: "{{ firewall_grp }}"
+      region: "{{ region }}"
+      state: present
+
+- hosts: localhost
+  tasks:
+  - name: "{{ env }} - Register public domains"
+    cloudflare_dns:
+      zone: "fejk.net"
+      record: "{{ item }}"
+      type: A
+      proxied: no
+      value: "{{ hostvars[item].v4_main_ip }}"
+      state: present
+      solo: true
+      account_email: "{{ cloudflare_account_email }}"
+      account_api_token: "{{ cloudflare_account_api_token }}"
+    with_items: "{{ groups['all'] }}"
+
+- name: "{{ env }} - Configure base servers"
+  include: deploy-obs.yml
