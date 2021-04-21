@@ -1,0 +1,13 @@
+[all:vars]
+env = prod
+internal_domain = infra.io
+internal_if = ens7
+internal_mtu = 1400
+firewall_grp = prod_OBS
+plan = "1024 MB RAM,25 GB SSD,1.00 TB BW"
+#plan = "4096 MB RAM,80 GB SSD,3.00 TB BW"
+region = Paris
+
+
+[obs]
+obs1 fqdn=obs1.fejk.net

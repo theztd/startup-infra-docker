@@ -1,0 +1,65 @@
+---
+- hosts: obs
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  pre_tasks:
+  - name: "{{ env }} - Cloud members are running"
+    local_action:
+      module: vultr_server
+      name: "{{ inventory_hostname_short }}"
+      os: "Debian 10 x64 (buster)"
+      private_network_enabled: yes
+      plan: "{{ plan }}"
+      ssh_keys:
+      - marek
+      - github
+      firewall_group: "{{ firewall_grp }}"
+      region: "{{ region }}"
+      state: present
+
+- hosts: obs
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+  - name: Install nginx with rtmp
+    block:
+    - apt:
+        name:
+        - nginx
+        - libnginx-mod-rtmp
+        state: present
+    tags:
+    - nginx
+  roles:
+  - role: core
+    tags:
+    - core
+    - base
+  - role: users
+    tags:
+    - users
+    - base
+  - role: docker-ce
+    tags:
+    - docker
+  # - role: nginx
+  #   tags:
+  #   - nginx
+
+- name: Configure DNS
+  hosts: localhost
+  tasks: 
+  - name: "{{ env }} - Register public domains"
+    cloudflare_dns:
+      zone: "fejk.net"
+      record: "{{ item }}"
+      type: A
+      proxied: no
+      value: "{{ hostvars[item].v4_main_ip }}"
+      state: present
+      solo: true
+      account_email: "{{ cloudflare_account_email }}"
+      account_api_token: "{{ cloudflare_account_api_token }}"
+    with_items: "{{ groups['all'] }}"

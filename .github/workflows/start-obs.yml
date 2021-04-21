@@ -44,7 +44,7 @@ jobs:
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
         eval $(ssh-agent -s)
-        ssh-add <(echo "${RSA_PRIV_KEY}")
+        ssh-add <(echo "${SSH_KEY}")
         cat > ~/.ssh/config<<EOF
         Host *
           User root
@@ -82,7 +82,7 @@ jobs:
     
     # Configure servers
     - name: ${env} - run init-cluster.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/${env} ./init-cluster.yml --diff
+      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i env/obs-prod deploy-obs.yml --diff
       env:
         env: ${{ github.event.inputs.env }}
 

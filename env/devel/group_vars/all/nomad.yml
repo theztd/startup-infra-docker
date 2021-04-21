@@ -26,6 +26,10 @@ nomad_telemetry_publish_allocation_metrics: true
 nomad_telemetry_publish_node_metrics: true
 nomad_telemetry_prometheus_metrics: true
 
+# datadog monitoring
+nomad_telemetry_datadog_address: "localhost:8125"
+
+
 # in production cluster it should be encrypted in vault
 nomad_encrypt: 3pa39lgTF/jt1OZZckld5P/5FCkm0pJXI5J4V9LY9eo=
 
