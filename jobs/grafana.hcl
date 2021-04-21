@@ -31,7 +31,7 @@ job "grafana" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.prometheus-http.rule=Host(`${var.fqdn}`)",
+        "traefik.http.routers.grafana-http.rule=Host(`${var.fqdn}`)",
       ]
 
       check {
