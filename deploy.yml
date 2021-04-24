@@ -2,11 +2,12 @@
 - hosts: cluster
   vars:
     ansible_python_interpreter: /usr/bin/python3
-
   pre_tasks:
   - service_facts:
     register: svc_list
     tags: always
+  # - set_vars:
+  #     hosts_inventory: "{{ vars.hostvars }}"
 
   tasks:
   - name: Install gotop
@@ -41,6 +42,14 @@
     tags:
     - users
     - base
+  - role: node_exporter
+    tags:
+    - monitoring
+    - node-exporter
+#  - role: promtail
+#    tags:
+#    - monitoring
+#    - promtail
   - role: docker-ce
     tags:
     - docker

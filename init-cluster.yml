@@ -71,6 +71,9 @@
       region: "{{ region }}"
       state: present
 
+- name: "{{ env }} - Configure base servers"
+  include: deploy.yml
+
 - hosts: localhost
   tasks:
 #  - debug:
@@ -122,5 +125,3 @@
     with_items: "{{ groups['cluster'] }}"
 
 
-- name: "{{ env }} - Configure base servers"
-  include: deploy.yml

@@ -28,8 +28,12 @@ Before start
 The key parts are:
 ------------------
  * **env/devel/hosts** is inventory used to for deploy servers in vultr infrastructure
+ 
  * **env/devel/vultr.yaml** file tell to ansible to get inventory from vultr api (especuialy IP addresses etc)
+ 
  * **~/.vultr.ini** is the right place where api key should be placed
+
+ * **files/jobs/** directory contains working jobs that helps you to reach usable environment faster
 
 
 ToDO:
