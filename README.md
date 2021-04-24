@@ -1,5 +1,5 @@
-Big infrastructure for tiny DevOps teams
-========================================
+The BIG infrastructure for tiny DevOps teams
+============================================
 
 Sometimes does not make sense to split logic betwean two automatization tools (like an ansible and a terraform) especialy if you need fast results and small complexity. This repository is an template/example of how to manage the whole infrastructure for companies with tiny DevOps team, low budget and huge plans.
 This repository comes from my experience from multiple infrastructure kickoffs for independent projects, startups or established companies trying to reach GitOps, IaaC etc. It is strongly focused on simplicity and small maintanance requirements but allows to grow across the borders of single datacenter or cloud provider.

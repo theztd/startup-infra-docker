@@ -40,24 +40,29 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Prepare SSH
+      shell: bash
       run: |
         mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
         eval $(ssh-agent -s)
         ssh-add <(echo "${RSA_PRIV_KEY}")
+        
         cat > ~/.ssh/config<<EOF
         Host *
           User root
           StrictHostKeyChecking no
 
         EOF
+        
+        chmod 700 ~/.ssh
         chmod 600 ~/.ssh/*
+        
         cp -a ~/.ssh /root/
 
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
     
     - name: Prepare vultr.ini
+      shell: bash
       run: |
         cat > ./vultr.ini<<EOF
         [default]
