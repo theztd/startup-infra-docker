@@ -37,6 +37,14 @@ clients:
   - url: http://loki.fejk.net/loki/api/v1/push
 
 scrape_configs:
+- job_name: system
+   pipeline_stages:
+   static_configs:
+   - labels:
+      job: msglog
+      env: nomad-devel
+      __path__: /var/log/messages.log
+
 - job_name: 'nomad-logs'
   consul_sd_configs:
     - server: '172.17.0.1:8500'

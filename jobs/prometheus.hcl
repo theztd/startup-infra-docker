@@ -62,6 +62,21 @@ scrape_configs:
 
     metrics_path: /metrics
 
+  - job_name: 'node_exporter'
+
+    consul_sd_configs:
+    - server: '{{ env "NOMAD_IP_prometheus_ui" }}:8500'
+      services: ['nomad-client']
+
+    metrics_path: /metrics
+    relabel_configs:
+    # get ip from label and add my custom port
+    - source_labels: ['__address__']
+      regex: ([^:]+)(?::\d+)?
+      action: replace
+      replacement: $1:9100
+      target_label: __address__
+
   - job_name: 'nomad_metrics'
 
     consul_sd_configs:
@@ -92,7 +107,10 @@ EOH
         ports = ["prometheus_ui"]
 
       }
-
+      resources {
+        cpu = 100
+        memory = 128
+      }
     }
   }
 }

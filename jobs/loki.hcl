@@ -45,6 +45,11 @@ job "loki" {
         perms = "0644"
       }
 
+      resources {
+        cpu = 100
+        memory = 64
+      }
+
       restart {
         attempts = 20
       }
