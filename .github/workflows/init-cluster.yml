@@ -44,7 +44,7 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         ssh-agent -a ${SSH_AUTH_SOCK} > /dev/null
-        ssh-add <(echo "${RSA_KEY}")
+        ssh-add <(echo "${SSH_KEY}")
         ssh-add -l
         
         cat > ~/.ssh/config<<EOF
