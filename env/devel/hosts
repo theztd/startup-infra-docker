@@ -7,7 +7,8 @@ firewall_grp = devel_NODES
 plan = "1024 MB RAM,25 GB SSD,1.00 TB BW"
 region = Frankfurt
 consul_version = 1.9.3
-nomad_version = 1.0.3
+#nomad_version = 1.0.3
+nomad_version = 1.1.0-beta1
 label = "nomad-devel"
 
 [masters]

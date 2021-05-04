@@ -43,8 +43,9 @@ jobs:
       shell: bash
       run: |
         mkdir -p ~/.ssh
-        eval $(ssh-agent -s)
-        ssh-add <(echo "${RSA_PRIV_KEY}")
+        ssh-agent -a ${SSH_AUTH_SOCK} > /dev/null
+        ssh-add <(echo "${RSA_KEY}")
+        ssh-add -l
         
         cat > ~/.ssh/config<<EOF
         Host *
@@ -60,6 +61,7 @@ jobs:
 
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     
     - name: Prepare vultr.ini
       shell: bash
@@ -90,6 +92,7 @@ jobs:
       run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/${env} ./init-cluster.yml --diff
       env:
         env: ${{ github.event.inputs.env }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 #    - name: Don't kill instace
 #      if: ${{ failure() }}
