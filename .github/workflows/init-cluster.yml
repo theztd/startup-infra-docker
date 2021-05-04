@@ -76,11 +76,6 @@ jobs:
       env:
         VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
-    - name: Prepare vault
-      run: echo "${VAULT_PASS}" > ./vault-pass
-      env:
-        VAULT_PASS: ${{ secrets.VAULT_PASS }}
-
     - name: Install ansible dependencies
       run: ansible-galaxy install -r requirements.yml --force
 
@@ -89,9 +84,13 @@ jobs:
     
     # Configure servers
     - name: ${env} - run init-cluster.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i ./env/${env} ./init-cluster.yml --diff
+      run: |
+        echo "${VAULT_PASS}" > ../vault-pass
+        ls -al ../vault-pass
+        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ../vault-pass -i ./env/${env} ./init-cluster.yml --diff
       env:
         env: ${{ github.event.inputs.env }}
+        VAULT_PASS: ${{ secrets.VAULT_PASS }}
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 #    - name: Don't kill instace
