@@ -74,13 +74,14 @@
 - name: "{{ env }} - Configure base servers"
   include: deploy.yml
 
-- hosts: localhost
+- hosts: cluster
   tasks:
 #  - debug:
 #      msg: "{{ env }} - {{ item }} IN A {{ hostvars[item].v4_main_ip }}"
 #    with_items: "{{ groups['all'] }}"
   - name: "{{ env }} - Register public domains"
-    cloudflare_dns:
+    local_action:
+      module: cloudflare_dns
       zone: "fejk.net"
       record: "{{ item }}"
       type: A
@@ -92,7 +93,8 @@
       account_api_token: "{{ cloudflare_account_api_token }}"
     with_items: "{{ groups['cluster'] }}"
   - name: "{{ env }} - Allow all TCP betwean nodes"
-    vultr_firewall_rule:
+    local_action:
+      module: vultr_firewall_rule
       group: "{{ env }}_MASTERS"
       protocol: tcp
       start_port: 1
@@ -100,7 +102,8 @@
       cidr: "{{ hostvars[item].v4_main_ip }}/32"
     with_items: "{{ groups['cluster'] }}"
   - name: "{{ env }} - Allow all UDP betwean nodes"
-    vultr_firewall_rule:
+    local_action:
+      module: vultr_firewall_rule
       group: "{{ env }}_MASTERS"
       protocol: udp
       start_port: 1
@@ -108,7 +111,8 @@
       cidr: "{{ hostvars[item].v4_main_ip }}/32"
     with_items: "{{ groups['cluster'] }}"
   - name: "{{ env }} - Allow all TCP betwean nodes"
-    vultr_firewall_rule:
+    local_action:
+      module: vultr_firewall_rule
       group: "{{ env }}_NODES"
       protocol: tcp
       start_port: 1
@@ -116,7 +120,8 @@
       cidr: "{{ hostvars[item].v4_main_ip }}/32"
     with_items: "{{ groups['cluster'] }}"
   - name: "{{ env }} - Allow all UDP betwean nodes"
-    vultr_firewall_rule:
+    local_action:
+      module: vultr_firewall_rule
       group: "{{ env }}_NODES"
       protocol: udp
       start_port: 1

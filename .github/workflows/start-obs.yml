@@ -1,15 +1,6 @@
-name: Init cluster
+name: OBS start
 
 on:
-  push: 
-    branches:
-    - main
-    - devel
-  pull_request:
-    branches:
-    - main
-    - devel
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
@@ -40,23 +31,30 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Prepare SSH
+      shell: bash
       run: |
         mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        eval $(ssh-agent -s)
+        ssh-agent -a ${SSH_AUTH_SOCK} > /dev/null
         ssh-add <(echo "${SSH_KEY}")
+        ssh-add -l
+
         cat > ~/.ssh/config<<EOF
         Host *
           User root
           StrictHostKeyChecking no
 
         EOF
+
+        chmod 700 ~/.ssh
         chmod 600 ~/.ssh/*
+
         cp -a ~/.ssh /root/
 
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
-    
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock    
+
+
     - name: Prepare vultr.ini
       run: |
         cat > ./vultr.ini<<EOF
@@ -69,11 +67,6 @@ jobs:
       env:
         VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
-    - name: Prepare vault
-      run: echo "${VAULT_PASS}" > ./vault-pass
-      env:
-        VAULT_PASS: ${{ secrets.VAULT_PASS }}
-
     - name: Install ansible dependencies
       run: ansible-galaxy install -r requirements.yml --force
 
@@ -81,10 +74,13 @@ jobs:
       run: ansible-lint .
     
     # Configure servers
-    - name: ${env} - run init-cluster.yml
-      run: ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ./vault-pass -i env/obs-prod deploy-obs.yml --diff
+    - name: ${env} - run deploy-obs.yml
+      run: |
+        echo "${VAULT_PASS}" > ../vault-pass
+        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ../vault-pass -i env/obs-prod deploy-obs.yml --diff
       env:
         env: ${{ github.event.inputs.env }}
+        VAULT_PASS: ${{ secrets.VAULT_PASS }}
 
 #    - name: Don't kill instace
 #      if: ${{ failure() }}
