@@ -30,8 +30,11 @@ job "nomad-proxy" {
       tags = [
             "public",
             "traefik.enable=true",
-            "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)",
+            "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)"
       ]
+#            I use cloudflare for https      
+#            "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true"
+#      ]
 
       check {
         type = "http"

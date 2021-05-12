@@ -1,0 +1,7 @@
+plugin: aws_ec2
+regions:
+  - eu-central-1
+boto_profile: devel
+
+
+

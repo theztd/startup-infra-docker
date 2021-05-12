@@ -35,6 +35,8 @@ The key parts are:
 
  * **files/jobs/** directory contains working jobs that helps you to reach usable environment faster
 
+ * **files/acl/** directory contains basic acls (Read more about [ACL](README-acl.md))
+
 
 ToDO:
 -----
