@@ -87,9 +87,7 @@ jobs:
       run: |
         echo "${VAULT_PASS}" > ../vault-pass
 
-        ssh-add -l
-
-        ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook --vault-password-file ../vault-pass -i ./env/${env} ./init-cluster.yml --diff
+        ansible-playbook --vault-password-file ../vault-pass -i ./env/${env} ./init-cluster.yml --diff
 
       env:
         env: ${{ github.event.inputs.env }}
