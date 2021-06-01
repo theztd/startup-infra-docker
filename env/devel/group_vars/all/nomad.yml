@@ -18,6 +18,8 @@ nomad_advertise_address: "{{ internal_ip }}"
 nomad_reserved:
   cpu: 500
   memory: 256
+  disk: 5000
+  reserved_ports: "22,4646,8500-8600"
 
 
 # Prometheus metrics
