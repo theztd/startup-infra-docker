@@ -34,6 +34,16 @@ job "traefik" {
         ]
       #    "/opt/certs:/certs"
       #  ]
+
+        # Docker special options for logging
+        logging {
+            type = "loki"
+            config {
+                loki-batch-size =  "400"
+                loki-url = "http://loki.fejk.net/loki/api/v1/push"
+            }
+        }
+
       }
 
       template {
@@ -71,6 +81,10 @@ entryPoints:
 
 log:
   level: INFO
+  format: json
+
+accessLog:
+  format: json
 
 api:
   dashboard: true
