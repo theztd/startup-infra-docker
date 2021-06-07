@@ -40,7 +40,22 @@ nomad_encrypt: 3pa39lgTF/jt1OZZckld5P/5FCkm0pJXI5J4V9LY9eo=
 nomad_options:
   driver.raw_exec.enable: "1"
   docker.volumes.enabled: "1"
-  
+
+  # clean wasted images after 1h
+  docker.cleanup.image.delay: "1h"
+
+  # Clean docker images
+  docker.clenup.image: true             # default true
+  docker.cleanup.container: true        # default true
+
+  # configure labels added to docker containers
+  docker.extra_labels:
+  - job_name
+  - task_group_name
+  - task_name
+  - namespace
+  - node_name
+
   # If you have systemd for example in container this is required
   # docker.privileged.enabled: true
   
