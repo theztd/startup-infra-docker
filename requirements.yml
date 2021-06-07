@@ -23,6 +23,9 @@
 - src: https://github.com/theztd/ansible-nomad.git
   scm: git
   name: nomad
+- src: git@github.com:theztd/nomad-cni.git
+  scm: git
+  name: nomad-cni
 - src: https://github.com/geerlingguy/ansible-role-nginx.git
   scm: git
   name: nginx

@@ -4,6 +4,10 @@
   - role: nomad
     tags:
     - nomad
+  - role: nomad-cni
+    tags:
+    - cni
+    - nomad
   - role: consul
     tags:
     - consul
