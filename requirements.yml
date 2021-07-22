@@ -11,7 +11,7 @@
   name: node_exporter
 - src: https://github.com/theztd/ans-s3cmd
   name: s3cmd
-- src: https://github.com/roles-ansible/ansible_role_restic.git
+- src: https://github.com/theztd/ans-restic.git
   name: restic
 - src: https://github.com/theztd/ansible-grafana
   name: grafana

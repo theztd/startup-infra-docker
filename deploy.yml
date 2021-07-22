@@ -53,6 +53,10 @@
   - role: docker-ce
     tags:
     - docker
+  - role: restic
+    tags:
+    - backup
+    - restic
   - role: s3cmd
     tags:
     - backup
