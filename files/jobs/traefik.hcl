@@ -11,10 +11,10 @@ job "traefik" {
 
   # rolling release
   update {
-    max_parallel      = 2
+    max_parallel      = 1
     health_check      = "checks"
     min_healthy_time  = "30s"
-    healthy_deadline  = "5m"
+    healthy_deadline  = "2m"
     auto_revert       = true
   }
 
@@ -35,14 +35,21 @@ job "traefik" {
       #    "/opt/certs:/certs"
       #  ]
 
+#        labels {
+#          app_name = "traefik"
+#        }
+
         # Docker special options for logging
-        logging {
-            type = "loki"
-            config {
-                loki-batch-size =  "400"
-                loki-url = "http://loki.fejk.net/loki/api/v1/push"
-            }
-        }
+
+#        # Can't use address using traefik
+#        logging {
+#            type = "loki"
+#            config {
+#                loki-batch-size =  "400"
+#                loki-url = "http://loki.fejk.net/loki/api/v1/push"
+#                max-size = "10m"
+#            }
+#        }
 
       }
 

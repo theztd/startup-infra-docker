@@ -13,7 +13,8 @@ ingester:
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
-  reject_old_samples_max_age: 168h # 7days
+  reject_old_samples_max_age: 48h # 7days
+  ingestion_rate_mb: 16
 
 table_manager:
   retention_deletes_enabled: true

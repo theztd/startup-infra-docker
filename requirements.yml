@@ -11,6 +11,8 @@
   name: node_exporter
 - src: https://github.com/theztd/ans-s3cmd
   name: s3cmd
+- src: https://github.com/roles-ansible/ansible_role_restic.git
+  name: restic
 - src: https://github.com/theztd/ansible-grafana
   name: grafana
 - src: https://github.com/theztd/ansible-mysqld_exporter
@@ -23,7 +25,7 @@
 - src: https://github.com/theztd/ansible-nomad.git
   scm: git
   name: nomad
-- src: git@github.com:theztd/nomad-cni.git
+- src: git@github.com:theztd/ans-nomad-cni.git
   scm: git
   name: nomad-cni
 - src: https://github.com/geerlingguy/ansible-role-nginx.git

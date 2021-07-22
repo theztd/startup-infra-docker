@@ -12,8 +12,8 @@ docker_daemon_settings:
   log-opts:
     loki-url: "http://loki.fejk.net/loki/api/v1/push"
     loki-batch-size: "400"
-    max-file: 3
-    max-size: 10m
+    max-file: "3"
+    max-size: "10m"
   
   # Enable prometheus metrics endpoint
   metrics-addr: "127.0.0.1:9323"

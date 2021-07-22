@@ -16,16 +16,20 @@ job "loki" {
     count = 1
 
     network {
+      mode = "bridge"
       port "http" { to = 3100 }
     }
 
     service {
       name = "loki"
       port = "http"
+
+
       tags = [
         "traefik.enable=true",
         "traefik.http.routers.loki-http.rule=Host(`${var.fqdn}`)"
       ]
+      
     }
 
     task "loki" {
@@ -46,8 +50,9 @@ job "loki" {
       }
 
       resources {
-        cpu = 100
+        cpu = 400
         memory = 64
+        memory_max = 256
       }
 
       restart {
