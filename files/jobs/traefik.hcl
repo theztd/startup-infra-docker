@@ -121,7 +121,7 @@ providers:
     prefix: "traefik"
     exposedByDefault: false
     endpoint:
-      address: 127.0.0.1:8500
+      address: 172.17.0.1:8500
       scheme: http
 
 EOF

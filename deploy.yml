@@ -20,7 +20,7 @@
       name: Backup home to s3
       job: '/bin/bash -lc "s3cmd sync /home/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
       minute: "30"
-      state: present
+      state: absent
     tags:
     - backup
   - name: Backup volumes to s3
@@ -28,7 +28,7 @@
       name: Backup volumes to s3
       job: '/bin/bash -lc "s3cmd sync /var/lib/docker/volumes/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
       minute: "05"
-      state: present
+      state: absent
     tags: backup
   - name: Install loki plugin to docker
     shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions; exit 0"
