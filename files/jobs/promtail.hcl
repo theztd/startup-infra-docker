@@ -82,7 +82,7 @@ positions:
   filename: /tmp/positions.yaml
 
 client:
-  url: var.loki_url
+  url: ${var.loki_url}
 
 scrape_configs:
 - job_name: 'nomad-logs'
