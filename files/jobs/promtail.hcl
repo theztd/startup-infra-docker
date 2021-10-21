@@ -1,111 +1,28 @@
+variable "loki_url" {
+  type = string
+  default = "https://localhost:3100/loki/api/v1/push"
+}
+
 job "promtail" {
-  datacenters = ["de1", "dc1"]
-  # Runs on all nomad clients
-  type = "system"
-  namespace = "system"
+  type        = "system"
+  datacenters = ["dc1"]
+  namespace   = "system"
 
   group "promtail" {
-    count = 1
-
     network {
-      dns {
-        servers = ["172.17.0.1", "8.8.8.8", "8.8.4.4"]
-      }
+      mode = "bridge"
+
+      // ports
       port "http" {
-        static = 3200
-      }
-    }
-
-    restart {
-      attempts = 3
-      delay    = "20s"
-      mode     = "delay"
-    }
-
-    task "promtail" {
-      driver = "docker"
-
-      env {
-        HOSTNAME = "${attr.unique.hostname}"
-      }
-      template {
-        data        = <<EOTC
-positions:
-  filename: /data/positions.yaml
-
-clients:
-  - url: http://loki.fejk.net/loki/api/v1/push
-
-scrape_configs:
-- job_name: system
-   pipeline_stages:
-   static_configs:
-   - labels:
-      job: msglog
-      env: nomad-devel
-      __path__: /var/log/messages.log
-
-- job_name: 'nomad-logs'
-  consul_sd_configs:
-    - server: '172.17.0.1:8500'
-  relabel_configs:
-    - source_labels: [__meta_consul_node]
-      target_label: __host__
-    - source_labels: [__meta_consul_service_metadata_external_source]
-      target_label: source
-      regex: (.*)
-      replacement: '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-(.*)-(.*)-(.*)-(.*)'
-      target_label:  'task_id'
-      replacement: '$1'
-    - source_labels: [__meta_consul_tags]
-      regex: ',(app|monitoring),'
-      target_label:  'group'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service]
-      target_label: job
-    - source_labels: ['__meta_consul_node']
-      regex:         '(.*)'
-      target_label:  'instance'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-(.*)-(.*)-(.*)-(.*)'
-      target_label:  '__path__'
-      replacement: '/nomad/alloc/$1/alloc/logs/*std*.{?,??}'
-EOTC
-        destination = "/local/promtail.yml"
+        to = 80
       }
 
-      config {
-        image = "grafana/promtail"
-        ports = ["http"]
-        args = [
-          "-config.file=/local/promtail.yml",
-          "-server.http-listen-port=${NOMAD_PORT_http}",
-        ]
-        volumes = [
-          "/data/promtail:/data",
-          "/opt/nomad/data/:/nomad/"
-        ]
-
-        mount {
-            type = "bind"
-            source = "/var/log"
-            target = "/local_logs/"
-            readonly = true
-        } 
-      }
-
-      resources {
-        cpu    = 50
-        memory = 100
-      }
-
+    } // END Network
+     
       service {
         name = "promtail"
         port = "http"
-        tags = ["monitoring"]
+        tags = ["monitoring","prometheus"]
 
         check {
           name     = "Promtail HTTP"
@@ -120,6 +37,96 @@ EOTC
             ignore_warnings = false
           }
         }
+      } // END service promtail-http
+    
+
+
+/*
+    // services proxy
+    service {
+      name = "promtail"
+      port = "80"
+
+      connect {
+        sidecar_service {
+          proxy {
+            upstreams {
+              destination_name = "loki"
+              local_bind_port  = 3100
+            }
+          }
+        }
+      }
+    }
+*/
+
+    task "promtail" {
+      driver = "raw_exec"
+
+      // artifacts
+      artifact {
+        source      = "https://github.com/grafana/loki/releases/download/v2.3.0/promtail-linux-amd64.zip"
+        mode        = "file"
+        destination = "local/promtail"
+      }
+
+      env {
+        AGENT_NAME = "${attr.unique.hostname}"
+      }
+
+      //templates
+      template {
+        destination = "local/config.yaml"
+        data        = <<EOF
+positions:
+  filename: /tmp/positions.yaml
+
+client:
+  url: var.loki_url
+
+scrape_configs:
+- job_name: 'nomad-logs'
+  consul_sd_configs:
+    - server: '172.17.0.1:8500'
+  relabel_configs:
+    - source_labels: [__meta_consul_node]
+      target_label: __host__
+    - source_labels: [__meta_consul_service_metadata_external_source]
+      target_label: source
+      regex: (.*)
+      replacement: '$1'
+    - source_labels: [__meta_consul_service_id]
+      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
+      target_label:  'task_id'
+      replacement: '$1'
+    - source_labels: [__meta_consul_tags]
+      regex: ',(app|monitoring),'
+      target_label:  'group'
+      replacement:   '$1'
+    - source_labels: [__meta_consul_service]
+      target_label: job
+    - source_labels: ['__meta_consul_node']
+      regex:         '(.*)'
+      target_label:  'instance'
+      replacement:   '$1'
+    - source_labels: [__meta_consul_service_id]
+      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
+      target_label:  '__path__'
+      replacement: '/var/nomad/alloc/$1/alloc/logs/*std*.{?,??}'
+EOF
+
+      }
+
+      config {
+        // config
+        command = "local/promtail"
+        args    = ["-config.file=local/config.yaml", "-config.expand-env=true", "-print-config-stderr"]
+      }
+
+      resources {
+        // resources
+        cpu    = 50
+        memory = 64
       }
     }
   }
