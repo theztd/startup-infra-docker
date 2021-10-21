@@ -60,7 +60,7 @@
     local_action:
       module: vultr_server
       name: "{{ inventory_hostname_short }}"
-      os: "Debian 10 x64 (buster)"
+      os: "{{ os }}"
       private_network_enabled: yes
       plan: "{{ plan }}"
       ssh_keys:

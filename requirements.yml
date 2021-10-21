@@ -17,7 +17,7 @@
   name: grafana
 - src: https://github.com/theztd/ansible-mysqld_exporter
   name: mysqld_exporter
-- src: https://github.com/theztd/ans-docker.git
+- src: https://github.com/geerlingguy/ansible-role-docker
   name: docker-ce
 - src: https://github.com/ansible-community/ansible-consul.git
   scm: git
