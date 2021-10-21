@@ -1,0 +1,29 @@
+---
+restic_log_dir: /var/log/restic
+restic_create_cron: true
+metrics_dir: "{{ node_exporter_textfile_dir }}"
+restic_repos:
+  remote:
+    location: "s3:s3.eu-central-1.amazonaws.com/restic-theztd-backup/{{ ansible_hostname }}"
+    password: "{{ vault_restic_password }}"
+    aws_access_key: "{{ vault_aws_restic_key }}"
+    aws_secret_access_key: "{{ vault_aws_restic_secret }}" 
+
+restic_backups:
+  home:
+    name: home
+    repo: remote
+    src: /home
+    scheduled: true
+    schedule_oncalendar: '*-*-* 06..19:40:00'
+  docker_volumes:
+    name: docker_volumes
+    repo: remote
+    src: /var/lib/docker/volumes
+    tags:
+    - docker_volume
+    scheduled: true
+    schedule_oncalendar: '*-*-* 06..19:50:00'
+    keep_hourly: 12
+    keep_daily: 20
+
