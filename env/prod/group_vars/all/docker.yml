@@ -8,12 +8,12 @@ docker_daemon_options:
   live-restore: true
 
   # default log driver will be loki
-  log-driver: "loki"
-  log-opts:
-    loki-url: "https://34406:eyJrIjoiNzJkNmViNjI4YzUxMTkwYWNiZTRiNGQyZmRkMzllOTY4YmM3ZDE4YyIsIm4iOiJub21hZCIsImlkIjo0Nzc5MzZ9@logs-prod-us-central1.grafana.net/loki/api/v1/push"
-    loki-batch-size: "100"
-    max-file: "3"
-    max-size: "10m"
+#  log-driver: "loki"
+#  log-opts:
+#    loki-url: "https://localhost:3100/loki/api/v1/push"
+#    loki-batch-size: "100"
+#    max-file: "3"
+#    max-size: "10m"
   
   # Enable prometheus metrics endpoint
   metrics-addr: "127.0.0.1:9323"
