@@ -30,3 +30,7 @@
 - src: https://github.com/geerlingguy/ansible-role-nginx.git
   scm: git
   name: nginx
+- src: https://github.com/infOpen/ansible-role-lynis.git
+  scm: git
+  name: lynis
+

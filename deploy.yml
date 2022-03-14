@@ -15,23 +15,8 @@
       src: https://github.com/xxxserxxx/gotop/releases/download/v4.1.1/gotop_v4.1.1_linux_amd64.tgz
       dest: /usr/local/bin
       remote_src: yes
-  - name: Backup home to s3
-    cron:
-      name: Backup home to s3
-      job: '/bin/bash -lc "s3cmd sync /home/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
-      minute: "30"
-      state: absent
-    tags:
-    - backup
-  - name: Backup volumes to s3
-    cron:
-      name: Backup volumes to s3
-      job: '/bin/bash -lc "s3cmd sync /var/lib/docker/volumes/ s3://vultr-{{ env }}/{{ ansible_fqdn }}/home/" 2>&1'
-      minute: "05"
-      state: absent
-    tags: backup
-  - name: Install loki plugin to docker
-    shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions; exit 0"
+#  - name: Install loki plugin to docker
+#    shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions; exit 0"
   
   roles:
   - role: core
@@ -46,6 +31,9 @@
     tags:
     - monitoring
     - node-exporter
+  - role: lynis
+    tags:
+    - security
 #  - role: promtail
 #    tags:
 #    - monitoring
@@ -61,5 +49,5 @@
     tags:
     - backup
 
-- name: "{{ env }} - Configure nomad"
-  include: nomad.yml
+- name: "{{ env }} Configure nomad"
+  import_playbook: nomad.yml
