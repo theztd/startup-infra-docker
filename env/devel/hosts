@@ -13,10 +13,10 @@ cni_plugin_src = https://github.com/containernetworking/plugins/releases/downloa
 label = "nomad-devel"
 
 [masters]
-node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS consul_node_role=bootstrap
+#node1 fqdn=node1.fejk.net firewall_grp=devel_MASTERS consul_node_role=bootstrap
 
 [nodes]
-node2 fqdn=node2.fejk.net
+#node2 fqdn=node2.fejk.net
 
 [cluster:children]
 masters
