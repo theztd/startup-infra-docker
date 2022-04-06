@@ -6,7 +6,7 @@ on:
       env:
         description: 'ENV'     
         required: true
-        default: 'devel'
+        default: 'prod'
       tags:
         description: 'Choose environment'  
 

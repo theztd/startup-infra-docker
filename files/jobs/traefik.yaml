@@ -1,0 +1,68 @@
+---
+
+# TODO: https://www.smarthomebeginner.com/cloudflare-settings-for-traefik-docker/
+
+entryPoints:
+  http:
+    address: ":80"
+# Cloudflare does https proxy
+#    http:
+#      redirections:
+#        entryPoint:
+#          to: https
+#          scheme: https
+#          #permanent: true
+    forwardedHeaders:
+      insecure: true
+
+# Cloudflare does https proxy
+#  https:
+#    address: ":443"
+#    forwardedHeaders:
+#      insecure: true
+
+  traefik:
+    address: ":8081"
+
+# tls:
+#   options:
+#     default:
+#       minVersion: VersionTLS12
+
+log:
+  level: INFO
+  format: json
+
+accessLog:
+  format: json
+
+api:
+  dashboard: true
+  insecure: true
+
+# https://doc.traefik.io/traefik/v1.7/configuration/logs/
+traefikLog:
+  filePath: "/alloc/log/trafic.log"
+  format: "json"
+  statusCodes:
+  - 200
+  - 300-302
+
+metrics:
+  prometheus:
+    entryPoint: "traefik"
+
+providers:
+  # enable file provider for certificates
+  # file:
+  #   filename: /certs/certificates.yaml
+  #   watch: true
+
+  # Enable Consul Catalog configuration backend.
+  consulCatalog:
+    refreshInterval: 30s
+    prefix: "traefik"
+    exposedByDefault: false
+    endpoint:
+      address: 172.17.0.1:8500
+      scheme: http

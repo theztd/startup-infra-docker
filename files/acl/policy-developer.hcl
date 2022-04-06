@@ -1,5 +1,6 @@
 namespace "default" {
   policy = "write"
+  capabilities = ["read-logs", "alloc-exec", "read-fs", "dispatch-job", "alloc-lifecycle"]
 }
 
 namespace "system" {

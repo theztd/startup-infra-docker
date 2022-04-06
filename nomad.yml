@@ -64,9 +64,13 @@
     - copy:
         src: jobs/traefik.hcl
         dest: /root/traefik.hcl
-    - shell: /bin/bash -lc "nomad run /root/traefik.hcl"
+    - copy:
+        src: jobs/traefik.yaml
+        dest: /root/traefik.yaml
+    - shell: /bin/bash -lc "cd /root; nomad run /root/traefik.hcl"
     tags:
     - jobs
+    - traefik
 
 #  - name: Deploy nomad-proxy
 #    block:
