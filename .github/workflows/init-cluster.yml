@@ -22,13 +22,6 @@ on:
         
 
 jobs:
-  gitleaks:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: gitleaks-action
-      uses: zricethezav/gitleaks-action@master
-
   deploy:
     #runs-on: self-hosted
     runs-on: ubuntu-latest
@@ -87,7 +80,7 @@ jobs:
       run: |
         echo "${VAULT_PASS}" > ../vault-pass
 
-        ansible-playbook --vault-password-file ../vault-pass -i ./env/${env} ./init-cluster.yml --diff
+        echo "SKIP ansible-playbook --vault-password-file ../vault-pass -i ./env/${env} ./init-cluster.yml --diff"
 
       env:
         env: ${{ github.event.inputs.env }}

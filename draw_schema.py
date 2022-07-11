@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from diagrams import Cluster, Diagram, Edge
 from diagrams.onprem.compute import Server, Nomad
 from diagrams.onprem.network import Consul, Traefik, Nginx
