@@ -7,13 +7,13 @@ firewall_grp = prod_NODES
 plan = "1024 MB RAM,25 GB SSD,1.00 TB BW"
 os = "Debian 11 x64 (bullseye)"
 region = Frankfurt
-consul_version = 1.12.0
-nomad_version = 1.3.1
+consul_version = 1.13.1
+nomad_version = 1.3.3
 cni_plugin_src = https://github.com/containernetworking/plugins/releases/download/v1.0.1/cni-plugins-linux-amd64-v1.0.1.tgz
 label = "nomad-prod"
 
 [masters]
-m1 fqdn=m1.fejk.net firewall_grp=prod_MASTERS consul_node_role=bootstrap
+n1 fqdn=n1.fejk.net firewall_grp=prod_MASTERS consul_node_role=bootstrap
 
 [nodes]
 #n1 fqdn=n1.fejk.net
