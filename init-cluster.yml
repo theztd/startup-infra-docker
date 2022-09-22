@@ -25,6 +25,10 @@
     - port: 22
       cidr: "0.0.0.0/0"
       proto: tcp
+    # SSH port
+    - port: 65022
+      cidr: "0.0.0.0/0"
+      proto: tcp
     # Nomad mgmt
     - port: 4646
       cidr: "0.0.0.0/0"
@@ -52,6 +56,10 @@
     - port: 22
       cidr: "0.0.0.0/0"
       proto: tcp
+    # SSH port
+    - port: 65022
+      cidr: "0.0.0.0/0"
+      proto: tcp
 
 - hosts: cluster
   gather_facts: no
@@ -71,8 +79,8 @@
       region: "{{ region }}"
       state: present
 
-- name: "{{ env }} - Configure base servers"
-  include: deploy.yml
+- name: "Configure base servers"
+  ansible.builtin.import_playbook: deploy.yml
 
 - hosts: cluster
   tasks:

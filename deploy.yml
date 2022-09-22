@@ -10,11 +10,11 @@
   #     hosts_inventory: "{{ vars.hostvars }}"
 
   tasks:
-  - name: Install gotop
-    unarchive:
-      src: https://github.com/xxxserxxx/gotop/releases/download/v4.1.1/gotop_v4.1.1_linux_amd64.tgz
-      dest: /usr/local/bin
-      remote_src: yes
+#  - name: Install gotop
+#    unarchive:
+#      src: https://github.com/xxxserxxx/gotop/releases/download/v4.1.1/gotop_v4.1.1_linux_amd64.tgz
+#      dest: /usr/local/bin
+#      remote_src: yes
 #  - name: Install loki plugin to docker
 #    shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions; exit 0"
   
@@ -41,13 +41,13 @@
   - role: docker-ce
     tags:
     - docker
-  - role: restic
-    tags:
-    - backup
-    - restic
-  - role: s3cmd
-    tags:
-    - backup
+#  - role: restic
+#    tags:
+#    - backup
+#    - restic
+#  - role: s3cmd
+#    tags:
+#    - backup
 
 - name: "{{ env }} Configure nomad"
   import_playbook: nomad.yml
