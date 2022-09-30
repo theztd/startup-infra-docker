@@ -1,0 +1,43 @@
+site_name: Startup Infras
+repo_url: http://infra.fejk.net
+
+markdown_extensions:
+  - smarty
+  - tables
+  - attr_list
+#  - toc
+  - fenced_code
+  - admonition
+  - pymdownx.emoji
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+
+plugins:
+  - search:
+      min_search_length: 2
+      indexing: 'full'
+  - tags:
+      tags_file: tags.md
+
+theme:
+#  logo: 
+  name: material
+  palette:
+    #scheme: slate
+    primary: blue
+  highlightjs: true
+  nav_style: dark
+  navigation_depth: 3
+
+#extra_css:
+#  - extra_css/fejk.css
+
+
