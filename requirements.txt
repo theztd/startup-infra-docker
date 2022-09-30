@@ -1,0 +1,7 @@
+mkdocs==1.3.*
+mkdocs-bootswatch==1.1
+mkdocs-material==8.2.*
+mkdocs-material-extensions==1.0.*
+ansible==6.4.*
+netaddr
+jinja2
