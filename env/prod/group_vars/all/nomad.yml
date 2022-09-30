@@ -60,4 +60,4 @@ nomad_options:
   # docker.privileged.enabled: true
   
   # If you uses private docker registry
-  # docker.auth.config: "/root/.docker/config.json"
+  docker.auth.config: "/root/.docker/config.json"
