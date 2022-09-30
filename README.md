@@ -2,7 +2,7 @@ The BIG infrastructure for tiny DevOps teams or startups
 ========================================================
 
 
-**Be UP and ready for releases in less than an hour!** This example infrastructure is ready to run your docker images, it is easy to use in your CI/CD pipelines and much more...
+**Be UP and ready for releases in less than a week!** This example infrastructure is ready to run your docker images, it is easy to use in your CI/CD pipelines and much more...
 
 
 Sometimes does not make sense to split logic betwean two automatization tools (like an ansible and a terraform) especialy if you need fast results and small complexity. This repository is an template/example of how to manage the whole infrastructure for companies with tiny DevOps team, low budget and huge plans.
