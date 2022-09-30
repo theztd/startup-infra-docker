@@ -9,6 +9,10 @@ job "traefik" {
     namespace    = "system"
     type         = "system"
 
+    meta {
+        template = "traefik"
+    }
+    
     # rolling release
     update {
         max_parallel      = 1
@@ -44,7 +48,7 @@ job "traefik" {
             driver = "docker"
 
             config {
-                image        = "traefik:v2.6"
+                image        = "traefik:v2.8"
                 network_mode = "host"
 
                 volumes = [
@@ -56,7 +60,7 @@ job "traefik" {
 
             resources {
                 cpu    = 100
-                memory = 32
+                memory = 64
             }
 
             template {
