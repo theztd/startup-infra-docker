@@ -22,7 +22,8 @@
 - src: https://github.com/ansible-community/ansible-consul.git
   scm: git
   name: consul
-- src: https://github.com/theztd/ansible-nomad.git
+#- src: https://github.com/theztd/ansible-nomad.git
+- src: https://github.com/ansible-community/ansible-nomad.git
   scm: git
   name: nomad
 - src: https://github.com/theztd/ans-nomad-cni.git
