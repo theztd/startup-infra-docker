@@ -10,6 +10,23 @@
   #     hosts_inventory: "{{ vars.hostvars }}"
 
   tasks:
+  - name: Create /root/.docker directory
+    file:
+      path: /root/.docker
+      state: directory
+      mode: '0750'
+      owner: root
+    tags:
+    - docker
+  - name: Deploy /root/.docker/config.json
+    copy:
+      content: "{{ docker_config_json }}"
+      dest: /root/.docker/config.json
+      mode: '0600'
+      owner: root
+    tags:
+    - docker
+    when: docker_config_json
 #  - name: Install gotop
 #    unarchive:
 #      src: https://github.com/xxxserxxx/gotop/releases/download/v4.1.1/gotop_v4.1.1_linux_amd64.tgz

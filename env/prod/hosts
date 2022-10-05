@@ -18,7 +18,7 @@ n1 fqdn=n1.fejk.net firewall_grp=prod_MASTERS consul_node_role=bootstrap
 
 [nodes]
 #n1 fqdn=n1.fejk.net
-#n2 fqdn=n2.fejk.net
+n2 fqdn=n2.fejk.net 
 #n3 fqdn=n3.fejk.net
 
 [cluster:children]
