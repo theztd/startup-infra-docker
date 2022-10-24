@@ -1,5 +1,11 @@
 namespace "*" {
   policy = "write"
+
+  variables {
+    path "*" {
+      capabilities = ["write"]
+    }
+  }
 }
 
 agent {

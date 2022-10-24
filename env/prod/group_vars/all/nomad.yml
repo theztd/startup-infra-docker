@@ -8,6 +8,9 @@ nomad_consul_address: "localhost:8500"
 nomad_acl_enabled: true
 nomad_bind_address: 0.0.0.0
 
+nomad_raft_protocol: 3
+
+
 # In case you want to use internal network ip for nomad communication 
 # It is a good idea in a single DC cluster)
 nomad_advertise_address: "{{ internal_ip }}"
@@ -29,7 +32,7 @@ nomad_telemetry_publish_node_metrics: true
 nomad_telemetry_prometheus_metrics: true
 
 # datadog monitoring
-nomad_telemetry_datadog_address: "localhost:8125"
+#nomad_telemetry_datadog_address: "localhost:8125"
 
 
 # in production cluster it should be encrypted in vault

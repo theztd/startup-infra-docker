@@ -5,3 +5,5 @@ mkdocs-material-extensions==1.0.*
 ansible==6.4.*
 netaddr
 jinja2
+# node_exporter
+passlib[bcrypt]
