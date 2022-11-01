@@ -9,7 +9,7 @@
 - je univerzalni platforma na praci s grafy
 - umi vizualizovat a korelovat data z ruznych zdroju (influxdb, prometheus, elasticsearch, loki, atp...)
 
-## Rycle odkazy
+## Rychle odkazy
  * [Grafana](https://graph) 
  * [Prometheus](http://prometheus) (zabespeceno base auth)
 

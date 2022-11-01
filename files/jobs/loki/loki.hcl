@@ -27,7 +27,10 @@ job "loki" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.loki-http.rule=Host(`${var.fqdn}`)"
+        "traefik.http.routers.loki-http.rule=Host(`${var.fqdn}`)",
+
+        "traefik.http.routers.prometheus-http.middlewares=auth",
+        "traefik.http.middlewares.auth.basicauth.users=grafana:HTPASSWD_HASH,log-writer:HTPASSWD_HASH"
       ]
       
     }
