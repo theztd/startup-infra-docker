@@ -1,7 +1,7 @@
 job "promtail" {
   datacenters = ["prod", "dc1"]
 
-  // namespace    = "system"
+  namespace    = "system"
   type = "system"
 
   meta {
@@ -28,6 +28,7 @@ job "promtail" {
         args = [
           "-config.file",
           "local/promtail.yaml",
+          "-client.url=${LOKI_URL}",
         ]
 
         # mount nomad's alloc dirs
@@ -41,6 +42,22 @@ job "promtail" {
         destination = "local/promtail.yaml"
         perms       = "0640"
       }
+
+      template {
+        data         = <<EOT
+{{ if nomadVarExists "nomad/jobs/promtail" }}
+  {{ with nomadVar "nomad/jobs/promtail" }}
+    LOKI_URL="{{ .loki_url }}"
+  {{ end }}
+{{ else }}
+    LOKI_URL="PLACE_THERE_YOUR_URL@logs-prod-us-central1.grafana.net/api/prom/push"
+{{ end }}
+
+EOT
+          env         = true
+          destination = "secrets/loki.env"
+          perms       = "0600"
+        }
 
       env {
         HOSTNAME = attr.unique.hostname
