@@ -95,19 +95,20 @@
     tags:
     - acl
 
-#  - name: Deploy nomad-proxy
-#    block:
-#    - copy:
-#        src: jobs/nomad-proxy.hcl
-#        dest: /root/nomad-proxy.hcl
-#    - copy:
-#        src: jobs/nomad-proxy_nginx.conf
-#        dest: /root/nomad-proxy_nginx.conf
-#    - shell: /bin/bash -lc "nomad run -var -var "fqdn=nomad.fejk.net" /root/nomad-proxy_nginx.hcl"
-#      args:
-#        chdir: /root
-#    tags:
-#    - jobs
+  - name: Configure nomad vars from ansible
+    block:
+    
+    - name: Generate vars file
+      copy:
+        content: "{{ nomad_init_secrets }}"
+        dest: /root/nomad_secrets.hcl
+      register: new_secrets
+
+    - name: Load variables (force)
+      shell: /bin/bash -lc 'nomad var put @/root/nomad_secrets.hcl'
+      when: new_secrets.changed
+
+    when: nomad_init_secrets is defined
 
 #  - name: Cluster info
 #    pause:
