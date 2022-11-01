@@ -96,19 +96,13 @@
     - acl
 
   - name: Configure nomad vars from ansible
-    block:
-    
-    - name: Generate vars file
-      copy:
-        content: "{{ nomad_init_secrets }}"
-        dest: /root/nomad_secrets.hcl
-      register: new_secrets
-
-    - name: Load variables (force)
-      shell: /bin/bash -lc 'nomad var put @/root/nomad_secrets.hcl'
-      when: new_secrets.changed
-
+    include_tasks: tasks/configure_nomad_vars.yaml
+    loop: "{{ nomad_init_secrets }}"
     when: nomad_init_secrets is defined
+    tags:
+    - nomad
+    - nomad_vars
+    - vars
 
 #  - name: Cluster info
 #    pause:

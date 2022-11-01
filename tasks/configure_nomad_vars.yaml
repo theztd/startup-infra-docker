@@ -1,0 +1,21 @@
+---
+- name: Generate vars file
+  copy:
+    content: "{{ item.content }}"
+    dest: "/root/nomad_vars-{{ item.name }}.hcl"
+  register: new_secrets
+  tags:
+  - nomad
+  - nomad_vars
+  - vars
+  - secrets
+
+- name: Load variables (force)
+  shell: /bin/bash -lc 'nomad var put -force @/root/nomad_vars-{{ item.name }}.hcl'
+  when: new_secrets.changed
+  tags:
+  - nomad
+  - nomad_vars
+  - vars
+  - secrets
+
