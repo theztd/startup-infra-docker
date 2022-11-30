@@ -1,7 +1,7 @@
 # rolling release version with http to https redirect and tls v12 minimum
 variable "dcs" {
     type = list(string)
-    default = ["dc1", "devel", "prod"]
+    default = ["dc1", "devel", "prod", "eu1"]
 }
 
 job "traefik" {

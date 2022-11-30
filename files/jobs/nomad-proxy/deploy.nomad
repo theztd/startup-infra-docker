@@ -1,6 +1,6 @@
 variable "dcs" {
     type = list(string)
-    default = ["dc1", "dev"]
+    default = ["dc1", "devel", "prod", "eu1"]
 }
 
 variable "fqdn" {
