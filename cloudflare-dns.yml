@@ -1,0 +1,70 @@
+---
+- hosts: cluster
+  tasks:
+#  - debug:
+#      msg: "{{ env }} - {{ item }} IN A {{ hostvars[item].v4_main_ip }}"
+#    with_items: "{{ groups['all'] }}"
+  - name: "{{ env }} - Register mamagement domain"
+    local_action:
+      module: cloudflare_dns
+      zone: "fejk.net"
+      record: "{{ cluster_fqdn }}"
+      type: A
+      proxied: no
+      value: "{{ hostvars[item].v4_main_ip }}"
+      state: present
+      solo: true
+      account_email: "{{ cloudflare_account_email }}"
+      account_api_token: "{{ cloudflare_account_api_token }}"
+    with_items: "{{ groups['masters'] }}"
+  - name: "{{ env }} - Register public domains"
+    local_action:
+      module: cloudflare_dns
+      zone: "fejk.net"
+      record: "{{ item }}"
+      type: A
+      proxied: no
+      value: "{{ hostvars[item].v4_main_ip }}"
+      state: present
+      solo: true
+      account_email: "{{ cloudflare_account_email }}"
+      account_api_token: "{{ cloudflare_account_api_token }}"
+    with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow all TCP betwean nodes"
+    local_action:
+      module: vultr_firewall_rule
+      group: "{{ env }}_MASTERS"
+      protocol: tcp
+      start_port: 1
+      end_port: 65535
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow all UDP betwean nodes"
+    local_action:
+      module: vultr_firewall_rule
+      group: "{{ env }}_MASTERS"
+      protocol: udp
+      start_port: 1
+      end_port: 65535
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow all TCP betwean nodes"
+    local_action:
+      module: vultr_firewall_rule
+      group: "{{ env }}_NODES"
+      protocol: tcp
+      start_port: 1
+      end_port: 65535
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
+  - name: "{{ env }} - Allow all UDP betwean nodes"
+    local_action:
+      module: vultr_firewall_rule
+      group: "{{ env }}_NODES"
+      protocol: udp
+      start_port: 1
+      end_port: 65535
+      cidr: "{{ hostvars[item].v4_main_ip }}/32"
+    with_items: "{{ groups['cluster'] }}"
+
+

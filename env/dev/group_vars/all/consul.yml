@@ -12,13 +12,10 @@ consul_bind_address: 0.0.0.0
 consul_addresses:
   http: 0.0.0.0
 
-# Listen only on LAN
-#consul_advertise_address_wan: "{{ internal_ip }}"
-#consul_advertise_address: "{{ internal_ip }}"
-
-# Listen on WAN
-consul_advertise_address_wan: "{{ v4_main_ip }}"
-consul_advertise_address: "{{ v4_main_ip }}"
+# In case you want to use internal network ip for nomad communication 
+# It is a good idea in a single DC cluster)
+consul_advertise_address_wan: "{{ internal_ip }}"
+consul_advertise_address: "{{ internal_ip }}"
 
 # DNSmasq
 consul_dnsmasq_enable: true
@@ -32,6 +29,8 @@ consul_ports_grpc: 8502
 
 
 # Hardening
+# In production this code should be in vault
+consul_encrypt_key: "ht7OvseXiSJwLOiwNNLDbo6LCcWyYoS96Pv86uHXFSM="
 #consul_acl_enable: true
 #consul_default_policy: allow  # deny
 #consul_token_persistence: true

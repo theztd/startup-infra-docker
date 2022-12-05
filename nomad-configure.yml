@@ -1,0 +1,109 @@
+---
+- name: Init nomad master
+  hosts: masters
+  gather_facts: yes
+  remote_user: root
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_python_interpreter: "/usr/bin/env python3"
+    consul_acl_token: false
+
+  tasks:
+  - name: Generate bootstrap key
+    shell: "nomad acl bootstrap > /root/bootstrap"
+    args:
+      warn: no
+      creates: /root/bootstrap
+
+  - name: Get nomad token
+    shell: 'grep "Secret" bootstrap | cut -d= -f2 | xargs'
+    register: nom_key
+
+  - set_fact:
+      nomad_master_token: "{{ nom_key.stdout }}"
+
+  - name: Nomad shell customization
+    copy:
+      dest: /etc/profile.d/20-nomad.sh
+      mode: 0755
+      owner: root
+      content: |
+        #!/bin/bash
+        # managed by Ansible
+
+        complete -C /usr/local/bin/nomad nomad
+        complete -C /usr/local/bin/nomad nomad
+
+        alias members="nomad server members ; echo ""; nomad node status -verbose"
+
+        export NOMAD_TOKEN="{{nomad_master_token}}"
+        export NOMAD_ADDR="http://localhost:4646"
+
+  - name: Create system namespace
+    shell: /bin/bash -lc 'nomad namespace apply -description "system services" system'
+    run_once: true
+
+  - name: Get status
+    shell: /bin/bash -lc "nomad node status"
+
+  - name: Synchronize configuration definitions
+    synchronize:
+      src: files/{{ item }}/
+      dest: /root/{{ item }}/
+      owner: no
+      group: no
+    with_items:
+    - jobs
+    - acl
+    tags:
+    - jobs
+    - acl
+    - traefik
+    - nomad-proxy
+
+  - name: Deploy traefik
+    shell: /bin/bash -lc "cd /root/jobs/traefik; nomad run deploy.nomad"
+    tags:
+    - jobs
+    - traefik
+
+  - name: Deploy nomad proxy
+    shell: /bin/bash -lc 'cd /root/jobs/nomad-proxy; nomad run -var "fqdn={{ cluster_fqdn }}" deploy.nomad'
+    tags:
+    - jobs
+    - nomad-proxy
+
+  - name: Configure ACL profiles
+    shell: /bin/bash -lc 'cd /root/acl; nomad acl policy apply -description "{{ item.desc }}" {{ item.name }} {{ item.path }}'
+    with_items:
+    - { name: "admins", path: "policy-admins.hcl", desc: "Full access for adminss" }
+    - { name: "developers", path: "policy-developers.hcl", desc: "Limited access for developers" }
+#    - { name: "pipelines", }
+    tags:
+    - acl
+
+  - name: Configure nomad vars from ansible
+    include_tasks: tasks/configure_nomad_vars.yaml
+    loop: "{{ nomad_init_secrets }}"
+    when: nomad_init_secrets is defined
+    tags:
+    - nomad
+    - nomad_vars
+    - vars
+
+#  - name: Cluster info
+#    pause:
+#      seconds: 1
+#      prompt: |
+#
+#        Summary
+#        =======
+#
+#        Cluster nodes
+#        -------------
+#        {% for host in hostvars %}
+#        {{ hostvars[host]['inventory_hostname'] }} - {{ hostvars[host].v4_main_ip }}
+#        {% endfor %}
+#
+#        NOMAD_TOKEN   {{nomad_master_token}}
+#        
