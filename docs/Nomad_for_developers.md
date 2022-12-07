@@ -1,6 +1,7 @@
 ---
 tags:
 - nomad
+- developers
 ---
 
 # Nomad for developers

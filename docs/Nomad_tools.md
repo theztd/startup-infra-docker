@@ -1,3 +1,8 @@
+---
+tags:
+- nomad
+---
+
 # Nomad - tools
 
 

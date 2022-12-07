@@ -1,3 +1,10 @@
+---
+tags:
+- monitoring
+- grafana
+- prometheus
+---
+
 # Monitoring (Prometheus + Grafana)
 
 [Prometheus](https://prometheus.io/docs/introduction/overview/)

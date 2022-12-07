@@ -1,3 +1,8 @@
+---
+tags:
+- grafana
+- loki
+---
 # Logs (Promtail + Loki + Grafana)
 
 ## Promtail
