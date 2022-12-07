@@ -11,12 +11,12 @@
 
 ## Rychle odkazy
  * [Grafana](https://graph) 
- * [Prometheus](http://prometheus) (zabespeceno base auth)
+ * [Prometheus](http://prometheus)
 
 
 ## Jak se dostavaji metriky do grafany
 
-Kazdy server v infrastrukture je sledovan prometheem skrze [node_exportera](https://github.com/prometheus/node_exporter). Diky tomu je server prez konkretni porty schopen poskytnout prometheoci aktualni metriky. Konkretne node_exporter posloucha na portu **9100**. 
+Kazdy server v infrastrukture je sledovan prometheem skrze [node_exportera](https://github.com/prometheus/node_exporter). Diky tomu je server prez konkretni porty schopen poskytnout prometheovi aktualni metriky. Konkretne node_exporter posloucha na portu **9100**. 
 
 Nase nastaveni node_exportera nam umoznuje pridavat libovolne nove metriky pouhym vkladanim souboru ve vhodnem formatu do cesty **/var/metrics/JMENO_METRIKY.prom**. Vice v casti o [vlastnich metrikach](#vlastni-metriky).
 
@@ -32,17 +32,17 @@ Monitoring pracuje se 4 zakladnimi stavy:
  * **Unknown** neznamy stav, protoze jsme neobdrzeli zadna data (dle zdroje chyby muze byt critical, warning, ale i OK)
 
 
-Existuji dva zpusoby jak vytvaret alerty:
+Existuji dva hlavni zpusoby jak vytvaret alerty:
 
 ### Prometheus alertmanager
-Velmi detailne konfigurovatelne, ale trochu slozitejsi. K popisovani alertu je pouzivan promQL jazyk, ktery neni uplne intuitivni, ale existuje velka [databaze prikladu](https://awesome-prometheus-alerts.grep.to/rules.html) 
+Velmi detailne konfigurovatelne, ale trochu slozitejsi. K popisovani alertu je pouzivan promQL jazyk, ktery neni uplne intuitivni, ale existuje bohata [databaze prikladu](https://awesome-prometheus-alerts.grep.to/rules.html) 
 
 ### Grafana alerts 
-Mnohem jednodusi na konfiguraci, ale zaroven i o dost omezenejsi. Alerty jde delat jen z nekterych typu grafu a presto, ze i zde se na pozadi generuje dotaz v promQL, nejsou zde podporovane slozitejsi podminky.
+Mnohem jednodusi na konfiguraci, ale zaroven i o dost omezenejsi. Alerty lze aktualne definovat jen u nekterych typu grafu a presto, ze i zde se na pozadi generuje dotaz v promQL, nejsou zde podporovane slozitejsi podminky (verze 7.X).
 
 
-### Notifikacni kanaly
-Samozrejmosi je pro oba nastroje **slack** a **email**, mimo tyto zpusoby lze posilat notifikace i pomoci webhooku, takze napriklad napojeni na opsgenie, nebo jine nastroje take neni velky problem. Pomoci rozsireni testujeme momentalne napojeni na teams, ktere neni uplne optimalni, ale zatim to funguje.
+### Notifikacni kanaly
+Samozrejmosi je pro oba nastroje **slack** a **email**, mimo tyto zpusoby lze posilat notifikace i pomoci webhooku, takze napriklad zakladani tasku nebo jine napojovani externich nastroju neni problem. 
 
 
 ## Vlastni metriky
@@ -61,30 +61,44 @@ Napriklad se rozhodnete reportovat delku nejake ulohy bezici na pozadi (treba ko
 #!/usr/bin/env python3
 
 import sys
+import time
 
 METRIC_OUTPUT_FILE="/tmp/metrics/jmeno-aplikace_metrika.prom"
 
-try:  
-    with open(METRIC_OUTPUT_FILE, "w") as fout:
-        print('jmeno_metriky{label="jeho_hodnota", dalsi_label="jina_hodnota"} hodnota_metriky', file=fout)
 
-except IOError as err:
-    print(f'JMENO_APLIKACE - Nepovedlo se mi zapsat metriku do souboru {METRIC_OUTPUT_FILE}, ale pokracuju', file=sys.stderr)
-    print(err, file=sys.stdout)
+def run_some_magic():
+    time.sleep(5)
 
+
+
+if __name__ == "__main__":
+    # My script
+    start = time.time()
+    run_some_magic()
+    end = time.time()
+
+    # Toto je ta "zajimava" reportovaci cast scriptu
+    try:
+        duration = end - start
+        with open(METRIC_OUTPUT_FILE, "w") as fout:
+            print(f'jmeno_metriky{{label="jeho_hodnota", dalsi_label="jina_hodnota"}} {duration}', file=fout)
+
+    except IOError as err:
+        print(f'JMENO_APLIKACE - Nepovedlo se mi zapsat metriku do souboru {METRIC_OUTPUT_FILE}, ale pokracuju', file=sys.stderr)
+        print(err, file=sys.stdout)
 ```
  
 
-**jmeno_metriky** - melo by byt unikatni a vypovidajici, dobrym zvykem je, kdyz obsahuje primo jmeno metriky nazev zdroje, ale v nekterych pripadech je vhodnejsi, jmeno zdroje umistit az do labelu. Pdorobnejsi dokumentace je zde Metric and label naming | Prometheus 
+**jmeno_metriky** - melo by byt unikatni a vypovidajici, dobrym zvykem je, kdyz obsahuje primo jmeno metriky a nazev zdroje, ale v nekterych pripadech je vhodnejsi, jmeno zdroje umistit az do labelu. Pdorobnejsi dokumentace je zde [Metric and label naming | Prometheus](https://prometheus.io/docs/practices/naming/) 
 
 **label** - slouzi k filtrovani metrik, je indexovan a muze nest velke mnozstvi upresnujicich informaci, pokud je spravne definovan a pouzit
 
-**hodnota_metriky** - mela by to byt ciselna hodnota (int, bool)
+**hodnota_metriky** - mela by to byt ciselna hodnota (int, bool, float)
 
  
 
 ### Vlastni HTTP endpoint (IDEALNI)
-Pokud by se nekdo rozhodl misto texfile exporteru mit sve metriky primo v aplikaci, staci vytvorit routu (typicky to  byva /metrics, ale neni to pravidlo) vracejici na GET requesty vystup podobny tomu nize (genrovany pomoci flask aplikace a prometheusexportera z navodu jeste nize)
+Pokud by se nekdo rozhodl misto texfile exporteru mit sve metriky primo v aplikaci, staci vytvorit routu (typicky to  byva /metrics, ale neni to pravidlo) vracejici na GET requesty vystup podobny tomu nize (genrovany pomoci flask aplikace a prometheus exportera)
 
  
 
