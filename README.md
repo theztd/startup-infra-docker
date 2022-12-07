@@ -54,10 +54,20 @@ mkdocs serve
 command inside the repository and go to **http://localhost:8000**
 
 
+Monitoring
+----------
+
+There are available grafana dashboards, specialy created for this infrastructure:
+  * [Nomad overview](https://grafana.com/grafana/dashboards/17549-cluster-overview/)
+  * [Nomad - Application detail](#comming-soon) - Comming soon 
+
+The grafana cloud is used by this infrastructure, to change it, modify monitoring jobs in path **./files/lobs/**.
+
 ToDO:
 -----
 
-- write ansible for this: https://www.observability.blog/nginx-monitoring-with-prometheus/ (works nice with grafana dashboard **11199**)
 - write deployment for GCP, AWS and Linode too...
 - more documentation (how to monitor it with grafana cloud, backuping with a restic to s3, ...)
+- keep it update
+
 
