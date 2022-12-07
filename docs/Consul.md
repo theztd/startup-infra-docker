@@ -126,7 +126,7 @@ curl http://localhost:8500/v1/catalog/service/JMENO_SLUZBY?pretty
 ```
  
 
-## Jak pridat sluzbu
+## Jak pridat sluzbu s health checkem
 
 
 Vzorova definice servisy s dvema checky. Nize uvedenou definici ulozime jako **node-1-svcs.json**
@@ -142,33 +142,33 @@ Vzorova definice servisy s dvema checky. Nize uvedenou definici ulozime jako **n
     "port": 80,
     "checks": [
       {
-		"name": "Check http",
+        "name": "Check http",
         "http": "http://localhost/",
-		"header": {
-	  		"Host": ["node-1"]
-		},
+	"header": {
+	  "Host": ["node-1"]
+	},
         "interval": "15s",
         "timeout": "5s",
-		"failures_before_critical": 3
+	"failures_before_critical": 3
       },
       {
-		"name":  "Graphql check",
-		"args": [
-	  		"/usr/local/bin/curl_stats_graphql", 
-			"http://localhost/graphql",
-			"api",
-			"version"
-		],
-		"interval": "30s",
-		"timeout": "5s",
-		"failures_before_critical": 3
+        "name":  "Graphql check",
+	"args": [
+	  "/usr/local/bin/curl_stats_graphql", 
+	  "http://localhost/graphql",
+	  "api",
+	  "version"
+        ],
+	"interval": "30s",
+	"timeout": "5s",
+	"failures_before_critical": 3
       }
     ]
   }
 }
 ```
 
-V prikladu je nadefinovana graphql sluzba na serveru node-1, sluzba je kazdych 30s kontrolovana jak pomoci skriptu, tak primym dotazem po http. Pokud by check 3x za sebou selhal, bude sluzba oznacena za nefunkcni a bude odebrana z DNS. Pokud bychom tedy pouzivali napriklad v nginxu jako backend adresu api.service.internal, nginx by po 90s vypadku, server vyradil a neposilal na nej requesty.
+V prikladu je nadefinovana graphql sluzba na serveru node-1. Tato sluzba je kazdych 30s kontrolovana jak pomoci skriptu, tak primym dotazem po http. Pokud by check 3x za sebou selhal, bude sluzba oznacena za nefunkcni a bude odebrana z DNS. Pokud bychom tedy pouzivali napriklad v nginxu jako backend adresu api.service.internal, nginx by po 90s vypadku, tuto sluzbu vyradil a neposilal na ni dalsi requesty.
 
 Takto vytvorenou sluzbu nasledne mohu nasadit nasledujicimi zpusoby:
 
@@ -191,7 +191,7 @@ cat > /etc/consul/conf.d/node-1-svcs.json
 consul reload
 ```
 
-## Jak pridat health check
+## Jak pridat pouze health check
 
 Postup je stejny jako pro servisu, jednoduchy priklad je opet nize
 
@@ -210,7 +210,7 @@ Postup je stejny jako pro servisu, jednoduchy priklad je opet nize
 ```
 
 
-Pokud chci check navazat primo na konkretni sluzbu a ne cely node, pak je nutne parametr service_id jako je v prikladu nize. Pokud bych tento parametr nepridal, check se navaze na cely server a negativni vysledek jednoho testu pak muze oznacit cely node za nedostupny, pokud to navazu na konkretni sluzbu, je oznacena jen sluzba samotna a to je to co vetsinou chceme.
+Pokud chci check navazat primo na konkretni sluzbu a ne cely node, pak je nutne parametr service_id jako je v prikladu vyse. Pokud bych tento parametr nepridal, check se navaze na cely server a negativni vysledek jednoho testu pak muze oznacit **cely node za nedostupny**, pokud to navazu na konkretni sluzbu, je oznacena jen sluzba samotna a to je to co vetsinou chceme.
 
 
 !!! note "Tutorial"
