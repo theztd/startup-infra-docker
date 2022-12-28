@@ -14,7 +14,7 @@ nomad_raft_protocol: 3
 # In case you want to use internal network ip for nomad communication 
 # It is a good idea in a single DC cluster)
 #nomad_advertise_address: "{{ internal_ip }}"
-nomad_advertise_address: "{{ v4_main_ip }}"
+nomad_advertise_address: "{{ v4_main_ip | default(ansible_ssh_host)}}"
 
 # It's good idea to reserve a few resources to system
 # if you plan to schedule applications on master node, 

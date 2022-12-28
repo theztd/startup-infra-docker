@@ -17,8 +17,8 @@ consul_addresses:
 #consul_advertise_address: "{{ internal_ip }}"
 
 # Listen on WAN
-consul_advertise_address_wan: "{{ v4_main_ip }}"
-consul_advertise_address: "{{ v4_main_ip }}"
+consul_advertise_address_wan: "{{ v4_main_ip | default(ansible_ssh_host)}}"
+consul_advertise_address: "{{ v4_main_ip | default(ansible_ssh_host)}}"
 
 # DNSmasq
 consul_dnsmasq_enable: true

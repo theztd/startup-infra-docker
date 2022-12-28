@@ -18,6 +18,7 @@ n1 fqdn=n1.fejk.net firewall_grp=prod_MASTERS consul_node_role=bootstrap
 
 [nodes]
 n2 fqdn=n2.fejk.net
+n3-cz fqdn=n3-cz.fejk.net ansible_ssh_host=37.205.11.208 internal_if=None
 
 [cluster:children]
 masters
