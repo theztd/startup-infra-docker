@@ -46,6 +46,15 @@
   - name: Get status
     shell: /bin/bash -lc "nomad node status"
 
+  - name: Configure nomad vars from ansible
+    include_tasks: tasks/configure_nomad_vars.yaml
+    loop: "{{ nomad_init_secrets }}"
+    when: nomad_init_secrets is defined
+    tags:
+    - nomad
+    - nomad_vars
+    - vars
+
   - name: Synchronize configuration definitions
     synchronize:
       src: files/{{ item }}/
@@ -81,15 +90,6 @@
 #    - { name: "pipelines", }
     tags:
     - acl
-
-  - name: Configure nomad vars from ansible
-    include_tasks: tasks/configure_nomad_vars.yaml
-    loop: "{{ nomad_init_secrets }}"
-    when: nomad_init_secrets is defined
-    tags:
-    - nomad
-    - nomad_vars
-    - vars
 
 #  - name: Cluster info
 #    pause:
