@@ -5,7 +5,8 @@ job "promtail" {
   type = "system"
 
   meta {
-    source = "git path to the deploy job"
+    template = "promtail"
+    git = "github.com/theztd/startup-infra-docker"
   }
 
   priority = 100

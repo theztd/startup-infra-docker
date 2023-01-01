@@ -15,6 +15,12 @@ job "nomad-proxy" {
 
   type = "service"
 
+  meta {
+    template = "nomad-proxy"
+    git = "github.com/theztd/startup-infra-docker"
+    fqdn = var.fqdn
+  }
+
   group "nginx" {
 
     network {
