@@ -11,6 +11,8 @@ job "traefik" {
 
     meta {
         template = "traefik"
+        git = "github.com/theztd/startup-infra-docker"
+        managed_by = "ansible"
     }
     
     # rolling release
@@ -32,8 +34,9 @@ job "traefik" {
         }
 
         service {
+            provider = "nomad"
             name = "traefik"
-            tags = ["metrics"]
+            tags = ["metrics", "lb"]
 
             check {
                 name     = "alive"

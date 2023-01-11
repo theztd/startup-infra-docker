@@ -16,10 +16,10 @@ entryPoints:
       insecure: true
 
 # Cloudflare does https proxy
-#  https:
-#    address: ":443"
-#    forwardedHeaders:
-#      insecure: true
+  https:
+    address: ":443"
+    forwardedHeaders:
+      insecure: true
 
   traefik:
     address: ":8081"
@@ -52,11 +52,47 @@ metrics:
   prometheus:
     entryPoint: "traefik"
 
+
+acme:
+  acmeLogging: true
+  email: msirovy@gmail.com
+#  storage: /local/acme.json
+  storage: traefik/acme/account
+
+# CA staging variant of the LE certificates (uncoment to start generating STAGING certificates)
+# caServer = https://acme-staging-v02.api.letsencrypt.org/directory
+
+  entryPoint: https
+  dnsChallenge:
+    provider: cloudflare
+    delayBeforeCheck: 0
+    resolvers:
+      - 1.1.1.1:53
+      - 8.8.8.8:53
+
+  domains:
+    main: "*.check-this.link"
+
+
+consul:
+  endpoint: "consul.service.dc1.consul:8500"
+  watch: true
+  prefix: "traefik"
+
 providers:
   # enable file provider for certificates
   # file:
   #   filename: /certs/certificates.yaml
   #   watch: true
+  nomad:
+    refreshInterval: 10s
+    prefix: "traefik"
+    exposedByDefault: false
+    endpoint:
+    {{ with nomadVar "nomad/jobs/traefik" }}
+      address: "{{ .NOMAD_ADDR }}"
+      token: "{{ .NOMAD_TOKEN }}"
+    {{ end }}
 
   # Enable Consul Catalog configuration backend.
   consulCatalog:
