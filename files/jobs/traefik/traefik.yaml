@@ -74,31 +74,36 @@ acme:
     main: "*.check-this.link"
 
 
-consul:
-  endpoint: "consul.service.dc1.consul:8500"
-  watch: true
-  prefix: "traefik"
+# consul:
+#   endpoint: "consul.service.dc1.consul:8500"
+#   watch: true
+#   prefix: "traefik"
 
 providers:
   # enable file provider for certificates
   # file:
   #   filename: /certs/certificates.yaml
   #   watch: true
+  # file:
+  #   filename: /certs/traefik-certs.yaml
+  #   watch: true
+
   nomad:
     refreshInterval: 10s
     prefix: "traefik"
     exposedByDefault: false
+    # namespace: "*"
     endpoint:
-    {{ with nomadVar "nomad/jobs/traefik" }}
+      {{ with nomadVar "nomad/jobs/traefik" }}
       address: "{{ .NOMAD_ADDR }}"
       token: "{{ .NOMAD_TOKEN }}"
-    {{ end }}
+      {{ end }}
 
   # Enable Consul Catalog configuration backend.
-  consulCatalog:
-    refreshInterval: 30s
-    prefix: "traefik"
-    exposedByDefault: false
-    endpoint:
-      address: consul.service.dc1.consul:8500
-      scheme: http
+  # consulCatalog:
+  #   refreshInterval: 30s
+  #   prefix: "traefik"
+  #   exposedByDefault: false
+  #   endpoint:
+  #     address: consul.service.dc1.consul:8500
+  #     scheme: http

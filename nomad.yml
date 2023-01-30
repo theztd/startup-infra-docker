@@ -4,12 +4,17 @@
   - role: nomad
     tags:
     - nomad
+
   - role: nomad-cni
     tags:
     - cni
     - nomad
-  - role: consul
-    tags:
-    - consul
+
+  # Since 1.4.3 the Nomad cluster can run 
+  # without the consul
+  #
+  # - role: consul
+  #   tags:
+  #   - consul
 
 - import_playbook: nomad-configure.yml

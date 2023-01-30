@@ -11,7 +11,7 @@ job "nomad-proxy" {
   region = "global"
 
   datacenters = var.dcs
-  namespace = "system"
+  namespace = "default"
 
   type = "service"
 
@@ -31,16 +31,17 @@ job "nomad-proxy" {
     }
 
     service {
+      name = "nomad-proxy"
       port = "nomad-ui"
+      provider = "nomad"
 
       tags = [
             "public",
             "traefik.enable=true",
             "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)"
-      ]
 #            I use cloudflare for https      
 #            "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true"
-#      ]
+      ]
 
       check {
         type = "http"
@@ -59,6 +60,9 @@ job "nomad-proxy" {
         ports = ["nomad-ui"]
         volumes = [
           "local/nginx.conf:/etc/nginx/nginx.conf"
+        ]
+        extra_hosts = [
+          "nomad-master:${NOMAD_IP_nomad_ui}"
         ]
       }
 

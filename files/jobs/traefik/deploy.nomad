@@ -30,13 +30,28 @@ job "traefik" {
         network {
             port "api" { static = 8081 }
             port "http" { static = 80 }
-            # port "https" { to = 443 }
+            port "https" { to = 443 }
+        }
+
+        service {
+            provider = "nomad"
+            name = "traefik-api"
+            port = "api"
+
+            tags = [
+                "public",
+                "traefik.enable=true",
+                "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`traefik-api.fejk.net`)",
+            ]
         }
 
         service {
             provider = "nomad"
             name = "traefik"
-            tags = ["metrics", "lb"]
+            tags = [
+                "metrics",
+                "lb",
+            ]
 
             check {
                 name     = "alive"

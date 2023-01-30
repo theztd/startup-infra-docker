@@ -52,6 +52,9 @@ nomad_options:
   docker.clenup.image: true             # default true
   docker.cleanup.container: true        # default true
 
+  # Required by host_path CSI plugin
+  docker.privileged.enabled: "true"
+
   # configure labels added to docker containers
   docker.extra_labels:
   - job_name
