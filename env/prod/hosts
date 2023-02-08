@@ -14,10 +14,10 @@ label = "nomad-prod"
 cluster_fqdn = "nomad.fejk.net"
 
 [masters]
-n1 fqdn=n1.fejk.net firewall_grp=prod_MASTERS consul_node_role=bootstrap
+n1 fqdn=n1.fejk.net ansible_ssh_host=199.247.7.161 firewall_grp=prod_MASTERS consul_node_role=bootstrap
 
 [nodes]
-n2 fqdn=n2.fejk.net
+n2 fqdn=n2.fejk.net ansible_ssh_host=45.76.86.97
 n3-cz fqdn=n3-cz.fejk.net ansible_ssh_host=37.205.11.208 internal_if=None
 
 [cluster:children]

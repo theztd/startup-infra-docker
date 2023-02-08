@@ -1,9 +1,12 @@
 server:
-  http_listen_port: 0
+  # Expose metrics
+  http_listen_port: 9080
   grpc_listen_port: 0
+
         
 positions:
   filename: /tmp/positions.yaml
+  sync_period: "60s"
         
 # client:
 # {{ if nomadVarExists "nomad/jobs/promtail" }}
@@ -15,60 +18,48 @@ positions:
 # {{ end }}
 
 scrape_configs:
-- job_name: 'nomad-logs'
-  consul_sd_configs:
-    - server: '172.17.0.1:8500'
+# nomad exporter is not supported by promtail
+- job_name: "docker"
+  docker_sd_configs:
+    - host: "unix:///var/run/docker.sock"
+      refresh_interval: "30s"
   relabel_configs:
-    - source_labels: [__meta_consul_node]
-      target_label: __host__
-    - source_labels: [__meta_consul_service_metadata_external_source]
-      target_label: source
-      regex: (.*)
-      replacement: '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
-      target_label:  'task_id'
-      replacement: '$1'
-    - source_labels: [__meta_consul_tags]
-      regex: ',(app|monitoring),'
-      target_label:  'group'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service]
-      target_label: job
-    - source_labels: ['__meta_consul_node']
-      regex:         '(.*)'
-      target_label:  'instance'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
+    - source_labels: ['__meta_docker_container_label_com_hashicorp_nomad_alloc_id']
+      target_label: "alloc_id"
+    - source_labels: ['__meta_docker_container_label_com_hashicorp_nomad_namespace']
+      target_label: "namespace"
+    - source_labels: ['__meta_docker_container_label_com_hashicorp_nomad_job_name']
+      target_label: "job"
+    - source_labels: ['__meta_docker_container_label_com_hashicorp_nomad_task_name']
+      target_label: "task"
+    - source_labels: ['__meta_docker_container_label_com_hashicorp_nomad_alloc_id']
       target_label:  '__path__'
-      replacement: '/nomad/alloc/$1/alloc/logs/*std*.{?,??}'
+      replacement: '/var/nomad/alloc/$1/alloc/logs/*std*.{?,??}'
+  pipeline_stages:
+    - static_labels:
+        source: "nomad"
+        job: docker
+        instance: "${HOSTNAME}"
 
-- job_name: 'nomad-json-logs'
-  consul_sd_configs:
-    - server: '172.17.0.1:8500'
-  relabel_configs:
-    - source_labels: [__meta_consul_node]
-      target_label: __host__
-    - source_labels: [__meta_consul_service_metadata_external_source]
-      target_label: source
-      regex: (.*)
-      replacement: '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
-      target_label:  'task_id'
-      replacement: '$1'
-    - source_labels: [__meta_consul_tags]
-      regex: ',(app|monitoring),'
-      target_label:  'group'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service]
-      target_label: job
-    - source_labels: ['__meta_consul_node']
-      regex:         '(.*)'
-      target_label:  'instance'
-      replacement:   '$1'
-    - source_labels: [__meta_consul_service_id]
-      regex: '_nomad-task-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-.*'
-      target_label:  '__path__'
-      replacement: '/nomad/alloc/$1/alloc/logs/*.json'
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      instance: "${HOSTNAME}"
+      job: kernel
+      __path__: /var/log/kern.log
+
+  - targets:
+      - localhost
+    labels:
+      instance: "${HOSTNAME}"
+      job: fail2ban
+      __path__: /var/log/fail2ban.log
+
+  - targets:
+      - localhost
+    labels:
+      instance: "${HOSTNAME}"
+      job: syslog
+      __path__: /var/log/{messages|syslog|daemon.log|auth.log}

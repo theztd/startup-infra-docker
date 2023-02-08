@@ -10,7 +10,6 @@ nomad_bind_address: 0.0.0.0
 
 nomad_raft_protocol: 3
 
-
 # In case you want to use internal network ip for nomad communication 
 # It is a good idea in a single DC cluster)
 #nomad_advertise_address: "{{ internal_ip }}"
@@ -55,16 +54,21 @@ nomad_options:
   # Required by host_path CSI plugin
   docker.privileged.enabled: "true"
 
-  # configure labels added to docker containers
-  docker.extra_labels:
-  - job_name
-  - task_group_name
-  - task_name
-  - namespace
-  - node_name
-
   # If you have systemd for example in container this is required
   # docker.privileged.enabled: true
   
   # If you uses private docker registry
   docker.auth.config: "/root/.docker/config.json"
+
+nomad_plugins:
+  docker:
+    config:
+      # configure labels added to docker containers
+      extra_labels:
+        - job_name
+        - task_group_name
+        - task_name
+        - namespace
+        - node_name
+
+

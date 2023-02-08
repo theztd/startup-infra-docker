@@ -69,6 +69,7 @@
     - acl
     - traefik
     - nomad-proxy
+    - promtail
 
   - name: Deploy traefik
     shell: /bin/bash -lc "cd /root/jobs/traefik; nomad run deploy.nomad"
@@ -81,6 +82,12 @@
     tags:
     - jobs
     - nomad-proxy
+
+  - name: Deploy promtail
+    shell: /bin/bash -lc 'cd /root/jobs/promtail; nomad run deploy.nomad'
+    tags:
+    - jobs
+    - promtail
 
   - name: Configure ACL profiles
     shell: /bin/bash -lc 'cd /root/acl; nomad acl policy apply -description "{{ item.desc }}" {{ item.name }} {{ item.path }}'
