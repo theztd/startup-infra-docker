@@ -47,22 +47,28 @@ nomad_options:
   # clean wasted images after 1h
   docker.cleanup.image.delay: "1h"
 
-  # Clean docker images
-  docker.clenup.image: true             # default true
-  docker.cleanup.container: true        # default true
 
   # Required by host_path CSI plugin
   docker.privileged.enabled: "true"
 
-  # If you have systemd for example in container this is required
-  # docker.privileged.enabled: true
   
-  # If you uses private docker registry
-  docker.auth.config: "/root/.docker/config.json"
 
 nomad_plugins:
   docker:
+    # If you have systemd for example in container this is required
+    # privileged:
+    #   enabled: true
+    cleanup:
+      image: true
+      container: true
     config:
+      # If you uses private docker registry
+      auth:
+        config: "/root/.docker/config.json"
+
+      volumes:
+        enabled: true
+
       # configure labels added to docker containers
       extra_labels:
         - job_name
