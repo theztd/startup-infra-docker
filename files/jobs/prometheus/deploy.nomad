@@ -14,10 +14,27 @@ variable "dcs" {
   default = ["dc1"]
 }
 
+locals {
+
+  // The cleanest way I've found to define secrets :-(
+  secrets = join(",", [
+    "marek:$apr1$DS5KwjtQ$U0HqeBc461vIsSBuyerph/"
+  ])
+}
+
+
 job "monitoring" {
   datacenters   = var.dcs
   type          = "service"
   namespace     = "system"
+
+  meta {
+		fqdn = var.fqdn
+    git = "github.com/theztd/startup-infra-docker"
+    managed = "ansible"
+    image = var.image
+	}
+
 
   group "prometheus" {
     count = 1
@@ -40,13 +57,12 @@ job "monitoring" {
       port = "http"
       provider = "nomad"			
 
-      # ZKKpyEpr7wcWLAl4C7xun4PkgRu/+3shLdn7659cfDC8lxjA+b3icJnLr
-      # U3tF8khrI6dW7hRMz89yruaJNbc4yPqDPiv - gitlab
       tags = [
           "traefik.enable=true",
           "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)",
-          "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true"
-//          "traefik.http.routers.${NOMAD_JOB_NAME}-http.middlewares=${NOMAD_JOB_NAME}-auth",
+          "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true",
+          "traefik.http.middlewares.${NOMAD_JOB_NAME}-auth.basicauth.users=${local.secrets}",
+          "traefik.http.routers.${NOMAD_JOB_NAME}-http.middlewares=${NOMAD_JOB_NAME}-auth"
       ]
 
       check {

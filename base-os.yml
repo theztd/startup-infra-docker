@@ -1,0 +1,29 @@
+---
+- hosts: all
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  pre_tasks:
+  - service_facts:
+    register: svc_list
+    tags: always
+
+  roles:
+  - role: core
+    tags:
+    - core
+    - base
+  - role: users
+    tags:
+    - users
+    - base
+  - role: node_exporter
+    tags:
+    - monitoring
+    - node-exporter
+  - role: lynis
+    tags:
+    - security
+  - role: docker-ce
+    tags:
+    - docker
+
