@@ -14,6 +14,11 @@ variable "dcs" {
   default = ["dc1"]
 }
 
+variable "image" {
+	type    = string
+	default = "prom/prometheus:v2.43.0"
+}
+
 locals {
 
   // The cleanest way I've found to define secrets :-(
@@ -60,7 +65,7 @@ job "monitoring" {
       tags = [
           "traefik.enable=true",
           "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)",
-          "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true",
+#          "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true",
           "traefik.http.middlewares.${NOMAD_JOB_NAME}-auth.basicauth.users=${local.secrets}",
           "traefik.http.routers.${NOMAD_JOB_NAME}-http.middlewares=${NOMAD_JOB_NAME}-auth"
       ]
@@ -84,7 +89,7 @@ job "monitoring" {
       driver = "docker"
 
       config {
-        image = "prom/prometheus:latest"
+        image = var.image
         volumes = [
           "local/prometheus.yml:/etc/prometheus/prometheus.yml",
         ]

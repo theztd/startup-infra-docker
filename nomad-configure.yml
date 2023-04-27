@@ -83,11 +83,17 @@
     - jobs
     - nomad-proxy
 
+  - name: Deploy prometheus
+    shell: /bin/bash -lc 'cd /root/jobs/prometheus; nomad run -var="fqdn=prometheus.fejk.net" deploy.nomad'
+    tags:
+    - jobs
+    - monitoring
+
   - name: Deploy promtail
     shell: /bin/bash -lc 'cd /root/jobs/promtail; nomad run deploy.nomad'
     tags:
     - jobs
-    - promtail
+    - monitoring
 
   - name: Configure ACL profiles
     shell: /bin/bash -lc 'cd /root/acl; nomad acl policy apply -description "{{ item.desc }}" {{ item.name }} {{ item.path }}'
