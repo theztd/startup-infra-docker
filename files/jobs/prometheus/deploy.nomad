@@ -1,10 +1,3 @@
-# prometheus basic monitoring
-# - base auth via traefik
-# - autodiscovery services (traefik currently)
-# - nomad metrics (jobs, nodes)
-
-# This deployment requires CONSUL
-
 variable "fqdn" {
   type = string
 }
@@ -20,7 +13,6 @@ variable "image" {
 }
 
 locals {
-
   // The cleanest way I've found to define secrets :-(
   secrets = join(",", [
     "marek:$apr1$DS5KwjtQ$U0HqeBc461vIsSBuyerph/"
@@ -31,7 +23,7 @@ locals {
 job "monitoring" {
   datacenters   = var.dcs
   type          = "service"
-  namespace     = "system"
+  namespace     = "default"
 
   meta {
 		fqdn = var.fqdn
@@ -65,7 +57,6 @@ job "monitoring" {
       tags = [
           "traefik.enable=true",
           "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)",
-#          "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true",
           "traefik.http.middlewares.${NOMAD_JOB_NAME}-auth.basicauth.users=${local.secrets}",
           "traefik.http.routers.${NOMAD_JOB_NAME}-http.middlewares=${NOMAD_JOB_NAME}-auth"
       ]
@@ -104,47 +95,29 @@ job "monitoring" {
       template {
         change_mode = "noop"
         destination = "local/prometheus.yml"
-        data = <<EOH
----
-global:
-  scrape_interval:     5s
-  evaluation_interval: 5s
+        data = file("prometheus.yml")
+      }
 
-scrape_configs:
-  - job_name: 'traefik'
-    consul_sd_configs:
-    - server: '172.17.0.1:8500'
-#      token: 'TOKEN'
-      services: ['traefik']
+      template {
+        destination = "local/monitoring.sec"
+        data = <<EOT
+        # Generate ENV from all nomad vars
+        {{ with nomadVar "nomad/jobs/monitoring" }}{{ .Parent.Items | sprig_toJson | parseJSON | toTOML }}{{end}}
+        EOT
+      }
 
-#    relabel_configs:
-#    - source_labels: ['__meta_consul_service_port']
-#      target_label:  '__meta_consul_service_port'
-#      replacement:   '8081'
+      template {
+        destination = "local/nomad_token.sec"
+        data = <<EOT
+{{ with nomadVar "nomad/jobs/monitoring" }}{{ .nomad_token }}{{ end }}
+        EOT
+      }
 
-    metrics_path: /metrics
-
-  - job_name: 'nomad_metrics'
-
-    consul_sd_configs:
-    - server: '172.17.0.1:8500'
-#      token: 'TOKEN'
-      services: ['nomad-clients', 'nomad-servers', 'nomad']
-
-    relabel_configs:
-    - source_labels: ['__meta_consul_tags']
-      regex: '(.*)http(.*)'
-      action: keep
-
-    scrape_interval: 5s
-    scheme: http
-    tls_config:
-      insecure_skip_verify: true
-    metrics_path: /v1/metrics
-    params:
-      format: ['prometheus']
-
-EOH
+      template {
+        destination = "local/node_exporter_password.sec"
+        data = <<EOT
+{{ with nomadVar "nomad/jobs/monitoring" }}{{ .node_exporter_password }}{{ end }}
+        EOT
       }
 
     } # END task prometheus

@@ -1,0 +1,70 @@
+---
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "node-exporter"
+    basic_auth:
+      username: agent
+      password_file: "/local/node_exporter_password.sec"
+    metrics_path: "/metrics"
+    scrape_interval: "30s"
+    static_configs:
+    # PROD nodes
+    - targets:
+        - "n1.fejk.net:9100"
+        - "n2.fejk.net:9100"
+
+      labels:
+        env: prod
+
+#   - job_name: 'traefik'
+#     consul_sd_configs:
+#     - server: '172.17.0.1:8500'
+# #      token: 
+#       services: ['traefik']
+
+#    relabel_configs:
+#    - source_labels: ['__meta_consul_service_port']
+#      target_label:  '__meta_consul_service_port'
+#      replacement:   '8081'
+
+    metrics_path: /metrics
+
+
+  - job_name: 'nomad_apps'
+    nomad_sd_configs:
+    - server: 'http://n1.fejk.net:4646'
+      authorization:
+        credentials_file: '/local/nomad_token.sec'
+    
+    # Filtering by tags / labels is not supported in prometheus (5.5.2023)
+    # services: ['monitoring']
+    
+    metrics_path: /_healthz/metrics
+    scrape_interval: 5s
+    scheme: http
+    tls_config:
+      insecure_skip_verify: true
+    # metrics_path: /v1/metrics
+    # params:
+    #   format: ['prometheus']
+
+    # relabel_configs:
+    # - source_labels: ['__meta_nomad_service']
+    #   regex: '(.*)http(.*)'
+    #   action: keep
+
+
+  - job_name: 'prometheus'
+    metrics_path: "/metrics"
+    scrape_interval: "30s"
+    static_configs:
+    # PROD nodes
+    - targets:
+        - "127.0.0.1:9090"
+      labels:
+        env: prod
+
+
