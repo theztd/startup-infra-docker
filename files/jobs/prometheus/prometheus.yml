@@ -29,8 +29,7 @@ scrape_configs:
 #    - source_labels: ['__meta_consul_service_port']
 #      target_label:  '__meta_consul_service_port'
 #      replacement:   '8081'
-
-    metrics_path: /metrics
+#    metrics_path: /metrics
 
 
   - job_name: 'nomad_apps'

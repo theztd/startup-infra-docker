@@ -1,7 +1,19 @@
 # rolling release version with http to https redirect and tls v12 minimum
 variable "dcs" {
     type = list(string)
-    default = ["dc1", "devel", "prod", "eu1"]
+    default = ["dc1"]
+}
+
+variable "image" {
+	type    = string
+	default = "traefik:v2.10"
+}
+
+locals {
+  // The cleanest way I've found to define secrets :-(
+  secrets = join(",", [
+    "marek:$apr1$DS5KwjtQ$U0HqeBc461vIsSBuyerph/"
+  ])
 }
 
 job "traefik" {
@@ -13,6 +25,7 @@ job "traefik" {
         template = "traefik"
         git = "github.com/theztd/startup-infra-docker"
         managed_by = "ansible"
+        image = var.image
     }
     
     # rolling release
@@ -42,12 +55,16 @@ job "traefik" {
                 "public",
                 "traefik.enable=true",
                 "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`traefik-api.fejk.net`)",
+                "traefik.http.middlewares.${NOMAD_JOB_NAME}-auth.basicauth.users=${local.secrets}",
+                "traefik.http.routers.${NOMAD_JOB_NAME}-http.middlewares=${NOMAD_JOB_NAME}-auth"
             ]
         }
 
         service {
             provider = "nomad"
             name = "traefik"
+            port     = "http"
+
             tags = [
                 "metrics",
                 "lb",
@@ -56,7 +73,6 @@ job "traefik" {
             check {
                 name     = "alive"
                 type     = "tcp"
-                port     = "http"
                 interval = "15s"
                 timeout  = "5s"
             }
@@ -66,7 +82,7 @@ job "traefik" {
             driver = "docker"
 
             config {
-                image        = "traefik:v2.8"
+                image        = var.image
                 network_mode = "host"
 
                 volumes = [

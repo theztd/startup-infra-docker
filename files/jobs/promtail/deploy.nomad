@@ -1,3 +1,8 @@
+variable "image" {
+	type    = string
+	default = "grafana/promtail:2.8.2"
+}
+
 job "promtail" {
   datacenters = ["prod", "dc1"]
 
@@ -5,9 +10,10 @@ job "promtail" {
   type = "system"
 
   meta {
-    template = "promtail"
     git = "github.com/theztd/startup-infra-docker"
-  }
+    managed = "ansible"
+    image = var.image
+	}
 
   priority = 100
 
@@ -24,7 +30,7 @@ job "promtail" {
       driver = "docker"
 
       config {
-        image = "grafana/promtail:master"
+        image = var.image
 
         args = [
           "-config.file",
