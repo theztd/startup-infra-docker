@@ -1,0 +1,6 @@
+[all:vars]
+ansible_ssh_port=22
+
+[cluster]
+cow1 ansible_ssh_host=70.34.212.69
+cow2 ansible_ssh_host=70.34.219.216

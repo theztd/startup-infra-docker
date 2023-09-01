@@ -1,0 +1,38 @@
+# Consul
+consul_group_name: cluster      # ansible group used by consul
+consul_datadir: /var/consul
+
+# Node role
+consul_node_role: client
+consul_ui: false
+consul_server: false
+consul_log_files_count: 2
+consul_client_addr: 0.0.0.0
+consul_bind_address: 0.0.0.0
+consul_addresses:
+  http: 0.0.0.0
+
+# Listen only on LAN
+#consul_advertise_address_wan: "{{ internal_ip }}"
+#consul_advertise_address: "{{ internal_ip }}"
+
+# Listen on WAN
+consul_advertise_address_wan: "{{ v4_main_ip | default(ansible_ssh_host)}}"
+consul_advertise_address: "{{ v4_main_ip | default(ansible_ssh_host)}}"
+
+# DNSmasq
+consul_dnsmasq_enable: true
+consul_dnsmasq_listen_addresses:
+- 172.17.0.1
+- 127.0.0.1
+
+# Features
+consul_connect_enabled: true
+consul_ports_grpc: 8502
+
+
+# Hardening
+#consul_acl_enable: true
+#consul_default_policy: allow  # deny
+#consul_token_persistence: true
+#consul_acl_master_token_display: true

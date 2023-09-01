@@ -1,0 +1,16 @@
+---
+admin_email: msirovy@gmail.com
+
+resolv:
+  search: fejk.net
+  nameservers:
+  - 1.1.1.1
+  - 8.8.8.8
+
+root_keys:
+- keys/marek
+- keys/github
+
+s3cmd_conf:
+  bucket_location: eu-central-1
+
