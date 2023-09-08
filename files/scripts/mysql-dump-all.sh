@@ -12,6 +12,7 @@ BACKUP_DIR=/home/backups
 #
 DATE=$(date +%F-%H%M)
 
+echo "$(date) Start mysql backup" | tee -a ${LOG_FILE}
 
 echo "# HELP mysqldump_status Per database dump result 0.. OK, 1.. ERR" > /tmp/metrics.tmp
 
@@ -26,7 +27,7 @@ for db in `mysql -sNe 'show databases;' | grep -vE '_schema|sys'`; do
 
 	echo "Backup $db into $dump_file" | tee -a ${LOG_FILE}
 
-	mysqldump --add-drop-table $db | gzip > $dump_file
+	mysqldump --single-transaction --quick --add-drop-table $db | gzip > $dump_file
 	echo "mysqldump_status{db_name=\"$db\"} $?" >> /tmp/metrics.tmp
 
 	dump_size_bytes=$(du -b $dump_file | cut -f1)
@@ -45,4 +46,12 @@ echo "# HELP mysqldump_count Count backuped databases" >> /tmp/metrics.tmp
 echo "# TYPE mysqldump_count gauge" >> /tmp/metrics.tmp
 echo "mysqldump_count $dump_count" >> /tmp/metrics.tmp
 
+
+# Cleanup old backups, add measurements and metric
+echo "Delete old backups" | tee -a ${LOG_FILE}
+find /home/backups/ -name "*sql.gz" -mtime +2 -delete -print | tee -a ${LOG_FILE}
+
+
+echo "$(date) Backup has been done!" | tee -a ${LOG_FILE}
 mv /tmp/metrics.tmp ${METRICS_PATH}
+

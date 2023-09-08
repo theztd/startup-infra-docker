@@ -12,7 +12,6 @@
   - name: Generate bootstrap key
     shell: "nomad acl bootstrap > /root/bootstrap"
     args:
-      warn: no
       creates: /root/bootstrap
 
   - name: Get nomad token
