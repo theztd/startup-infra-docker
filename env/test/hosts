@@ -2,5 +2,5 @@
 ansible_ssh_port=22
 
 [cluster]
-cow1 ansible_ssh_host=70.34.212.69
-cow2 ansible_ssh_host=70.34.219.216
+pg2 ansible_ssh_host=35.233.109.93
+pg1 ansible_ssh_host=35.189.194.243

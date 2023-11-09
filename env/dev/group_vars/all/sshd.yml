@@ -1,6 +1,0 @@
----
-sshd_ports:
-- 65022
-- 22
-
-sshd_client_alive_interval: 3600
