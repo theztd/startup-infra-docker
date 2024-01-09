@@ -1,8 +1,3 @@
-variable "dcs" {
-    type = list(string)
-    default = ["dc1", "devel", "prod", "eu1"]
-}
-
 variable "fqdn" {
     type = string
 }
@@ -10,7 +5,6 @@ variable "fqdn" {
 job "nomad-proxy" {
   region = "global"
 
-  datacenters = var.dcs
   namespace = "default"
 
   type = "service"
@@ -36,11 +30,8 @@ job "nomad-proxy" {
       provider = "nomad"
 
       tags = [
-            "public",
-            "traefik.enable=true",
-            "traefik.http.routers.${NOMAD_JOB_NAME}-http.rule=Host(`${var.fqdn}`)"
-#            I use cloudflare for https      
-#            "traefik.http.routers.${NOMAD_JOB_NAME}-http.tls=true"
+            "http=true",
+            "http.fqdn=${var.fqdn}"
       ]
 
       check {

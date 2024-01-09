@@ -70,11 +70,11 @@
     - nomad-proxy
     - promtail
 
-  - name: Deploy traefik
-    shell: /bin/bash -lc "cd /root/jobs/traefik; nomad run deploy.nomad"
+  - name: Deploy ingress
+    shell: /bin/bash -lc "cd /root/jobs/nginx-ingress; nomad run deploy.nomad"
     tags:
     - jobs
-    - traefik
+    - ingress
 
   - name: Deploy nomad proxy
     shell: /bin/bash -lc 'cd /root/jobs/nomad-proxy; nomad run -var "fqdn={{ cluster_fqdn }}" deploy.nomad'
