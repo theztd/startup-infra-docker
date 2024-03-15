@@ -4,8 +4,6 @@ variable "image" {
 }
 
 job "promtail" {
-  datacenters = ["prod", "dc1"]
-
   namespace    = "system"
   type = "system"
 
@@ -24,6 +22,8 @@ job "promtail" {
       dns {
         servers = ["172.17.0.1", "8.8.8.8", "1.1.1.1"]
       }
+
+      port "http" { to = 9080 }
     }
 
     task "promtail" {
@@ -36,11 +36,15 @@ job "promtail" {
           "-config.file",
           "local/promtail.yaml",
           "-client.url=${LOKI_URL}",
+          "-config.expand-env=true"
         ]
+
+        ports = ["http"]
 
         # mount nomad's alloc dirs
         volumes = [
-          "/var/nomad/:/nomad/"
+          "/var/nomad/:/nomad/",
+          "/var/run/docker.sock:/var/run/docker.sock"
         ]
       }
 
@@ -72,8 +76,8 @@ EOT
 
       resources {
         cpu        = 300 # MHz
-        memory     = 32  # MB
-        memory_max = 64  #MB
+        memory     = 100  # MB
+        memory_max = 150  #MB
       }
 
 
